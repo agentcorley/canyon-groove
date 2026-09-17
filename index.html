@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=3">
+<link rel="stylesheet" href="assets/site.css?v=4">
 <style>
   :root {
     --bg: #0a0a08; --surface: #111110; --groove: #1a1a17; --edge: #2a2820;
@@ -357,7 +357,7 @@
 <section class="origin" aria-label="Where this came from">
   <figure>
     <img src="groove.jpg" width="901" height="895" loading="lazy" alt="Electron-microscope photograph of a stylus resting in a record groove. Labels point to the needle and to the waves of the left and right channels cut into the groove walls.">
-    <figcaption>A stylus in a record groove under an electron microscope. Posted to <a href="https://www.reddit.com/r/vinyl/comments/zuapb3/a_close_up_picture_of_a_record_groove_and_needle/" rel="noopener">r/vinyl</a> by Total_Doofuss484, 2022.</figcaption>
+    <figcaption>A stylus in a record groove under an electron microscope. Posted to <a href="https://www.reddit.com/r/vinyl/comments/zuapb3/a_close_up_picture_of_a_record_groove_and_needle/" target="_blank" rel="noopener">r/vinyl</a> by Total_Doofuss484, 2022.</figcaption>
   </figure>
   <div class="about">
     <p><strong>Where this came from.</strong> When I saw this photograph, where the magnified microscopic record player needle sits between the vinyl record’s tracks I thought the groove walls looked like canyon walls. They look ridged and layered, and the shape of those walls is the music. I wondered whether it works the other way round. Could you take a real canyon, treat the cross-section as a groove, and use AI to drag a needle through the canyon grooves?</p>
@@ -371,7 +371,7 @@
   <p>Ideas, tools, and the people building tomorrow’s experiences. Weekly, from Jonathan Corley.</p>
 </section>
 
-<p class="credits">Elevation data: <a href="https://open-meteo.com/en/docs/elevation-api" rel="noopener">Open-Meteo Elevation API</a> (Copernicus DEM GLO-90), with one transect from <a href="https://open-elevation.com" rel="noopener">Open-Elevation</a> (SRTM). Sampled September 2026. Sound: Web Audio API, no samples, everything synthesized in the browser. MP3 encoding by <a href="https://github.com/zhuker/lamejs" rel="noopener">lamejs</a>. Source on <a id="repoLink" href="https://github.com/agentcorley/canyon-groove" rel="noopener">GitHub</a>.</p>
+<p class="credits">Elevation data: <a href="https://open-meteo.com/en/docs/elevation-api" target="_blank" rel="noopener">Open-Meteo Elevation API</a> (Copernicus DEM GLO-90), with one transect from <a href="https://open-elevation.com" target="_blank" rel="noopener">Open-Elevation</a> (SRTM). Sampled September 2026. Sound: Web Audio API, no samples, everything synthesized in the browser. MP3 encoding by <a href="https://github.com/zhuker/lamejs" target="_blank" rel="noopener">lamejs</a>. Source on <a id="repoLink" href="https://github.com/agentcorley/canyon-groove" target="_blank" rel="noopener">GitHub</a>.</p>
 
 <footer id="labFooter"></footer>
 
@@ -383,7 +383,7 @@
   <a href="#top" id="dockTop">Top</a>
 </div>
 
-<script src="assets/site.js?v=3"></script>
+<script src="assets/site.js?v=4"></script>
 <script>
 'use strict';
 
@@ -1408,7 +1408,7 @@ function boot() {
     setStatus('Saving…');
     let handled = false;
     try {
-      const r = await fetch('api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: form.email.value, cut: name, url: shareHref(), canyon: state.canyon.name }) });
+      const r = await fetch('api/subscribe/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: form.email.value, cut: name, url: shareHref(), canyon: state.canyon.name }) });
       const j = await r.json().catch(() => null);
       if (!j || typeof j.ok !== 'boolean') throw new Error('no route');   // static host, no function here
       handled = true;

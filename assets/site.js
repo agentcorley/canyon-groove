@@ -33,23 +33,23 @@
     mount.classList.add('lab-footer');
     mount.innerHTML =
       '<div class="lf-grid">'
-      + '<div><div class="lf-brand"><a href="' + SITE + '">Cumberland Coast</a></div>'
+      + '<div><div class="lf-brand"><a href="' + SITE + '" target="_blank" rel="noopener">Cumberland Coast</a></div>'
       + '<div>Strategy + Craft. An advisory firm with a studio.</div>'
       + '<div style="margin-top:.5rem">51 S Peachtree St #2<br>Norcross, GA 30071</div></div>'
       + '<div><h4>Navigate</h4><ul>'
-      + ['Work', 'Consulting', 'Studio', 'About', 'Contact'].map(n => '<li><a href="' + SITE + '/' + n.toLowerCase() + '">' + n + '</a></li>').join('')
+      + ['Work', 'Consulting', 'Studio', 'About', 'Contact'].map(n => '<li><a href="' + SITE + '/' + n.toLowerCase() + '" target="_blank" rel="noopener">' + n + '</a></li>').join('')
       + '</ul></div>'
       + '<div><h4>Other places we show up</h4><ul>'
-      + '<li><a href="https://personalizecx.com" rel="noopener">PersonalizeCX.com</a></li>'
-      + '<li><a href="https://jonathancorley.com" rel="noopener">JonathanCorley.com</a></li>'
-      + '<li><a href="https://norcrosssocialclub.substack.com" rel="noopener">Norcross Social Club</a></li>'
-      + '<li><a href="https://www.linkedin.com/in/jonathancorley" rel="noopener">LinkedIn</a></li>'
-      + '<li><a href="https://github.com/agentcorley" rel="noopener">GitHub</a></li>'
+      + '<li><a href="https://personalizecx.com" target="_blank" rel="noopener">PersonalizeCX.com</a></li>'
+      + '<li><a href="https://jonathancorley.com" target="_blank" rel="noopener">JonathanCorley.com</a></li>'
+      + '<li><a href="https://norcrosssocialclub.substack.com" target="_blank" rel="noopener">Norcross Social Club</a></li>'
+      + '<li><a href="https://www.linkedin.com/in/jonathancorley" target="_blank" rel="noopener">LinkedIn</a></li>'
+      + '<li><a href="https://github.com/agentcorley" target="_blank" rel="noopener">GitHub</a></li>'
       + '</ul></div>'
       + '<div class="lf-catalog"><h4>The Catalog</h4>'
       + '<p>A dispatch on ideas, tools, and the people building tomorrow’s experiences. Weekly, from Jonathan Corley.</p>'
       + subscribeForm({ tag: o.tag || 'cumberland-coast', source: o.source, cta: 'Subscribe' })
-      + '<p style="margin-top:.5rem;font-size:.66rem">Or read it first at <a href="https://buttondown.com/catalog" rel="noopener">buttondown.com/catalog</a>.</p>'
+      + '<p style="margin-top:.5rem;font-size:.66rem">Or read it first at <a href="https://buttondown.com/catalog" target="_blank" rel="noopener">buttondown.com/catalog</a>.</p>'
       + '</div></div>'
       + '<div class="lf-legal"><span>Cumberland Coast LLC, founded 2014</span><span>Built in Atlanta</span><span>All rights reserved &copy; ' + year + '</span>'
       + (o.extra ? '<span>' + o.extra + '</span>' : '') + '</div>';
@@ -85,6 +85,18 @@
     const orig = history.replaceState.bind(history);
     history.replaceState = function (s, t, u) { orig(s, t, u); postToParent({ type: 'cg-hash', hash: location.hash }); };
   }
+
+  /* A link to another site must open in a new tab. Inside an iframe an ordinary
+     link navigates the frame, and sites that refuse framing (Reddit among them)
+     render as a blank box on the host page. */
+  document.addEventListener('click', e => {
+    const a = e.target && e.target.closest && e.target.closest('a[href]');
+    if (!a || a.target === '_blank' || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button > 0) return;
+    let u; try { u = new URL(a.href, location.href); } catch (err) { return; }
+    if (!/^https?:$/.test(u.protocol) || u.origin === location.origin) return;
+    e.preventDefault();
+    window.open(u.href, '_blank', 'noopener');
+  }, true);
 
   window.CCLab = { subscribeForm, footer, isEmbedded, canonical, shareBase, autoHeight, syncHash, reveal, esc, BUTTONDOWN, SITE };
 })();
