@@ -60,8 +60,10 @@
   .disc-caption { font-size: .58rem; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); }
 
   /* Sections */
-  .label { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; font-size: .62rem; letter-spacing: .26em; text-transform: uppercase; color: var(--amber); border-bottom: 1px solid var(--amber-dim); padding-bottom: .45rem; margin-bottom: 1rem; }
-  .label .sub { color: var(--cream-dim); letter-spacing: .12em; text-transform: none; font-size: .68rem; text-align: right; display: inline-flex; align-items: center; gap: .5rem; }
+  .label { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; border-bottom: 1px solid var(--amber-dim); padding-bottom: .5rem; margin-bottom: 1rem; }
+  .label h2 { font-family: var(--display); font-weight: 400; font-size: clamp(1.7rem, 3.2vw, 2.1rem); letter-spacing: .08em; line-height: 1; color: var(--cream); display: flex; align-items: baseline; gap: .7rem; }
+  .label h2 .num { font-family: var(--mono); font-size: .8rem; letter-spacing: .2em; color: var(--amber); }
+  .label .sub { color: var(--cream-dim); letter-spacing: .06em; font-size: .8rem; text-align: right; display: inline-flex; align-items: center; gap: .5rem; }
   .qbtn { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--cream-dim); background: transparent; color: var(--cream-dim); font-size: .7rem; font-weight: 700; line-height: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
   .qbtn:hover { border-color: var(--amber); color: var(--amber); }
 
@@ -85,9 +87,33 @@
 
   /* Groove panel */
   .groove-panel { background: var(--surface); border: 1px solid var(--edge); padding: 1.1rem 1.1rem .9rem; position: relative; }
-  .panel-title { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: baseline; margin-bottom: .6rem; }
-  .panel-title h2 { font-family: var(--display); font-size: 1.9rem; letter-spacing: .08em; font-weight: 400; color: var(--cream); line-height: 1; }
-  .panel-title .where { font-size: .68rem; color: var(--cream-dim); letter-spacing: .1em; }
+  .now { display: grid; grid-template-columns: auto 1fr; gap: 1rem 1.4rem; align-items: center; margin-bottom: 1rem; }
+  .play { width: 84px; height: 84px; border-radius: 50%; border: 2px solid var(--amber); background: var(--amber); color: var(--bg); cursor: pointer; display: grid; place-items: center; position: relative; transition: transform .12s, background .15s; flex: 0 0 auto; }
+  .play:hover { transform: scale(1.04); }
+  .play:active { transform: scale(.97); }
+  .play svg { width: 34px; height: 34px; display: block; }
+  .play .ic-pause { display: none; }
+  .play.on { background: transparent; color: var(--amber); }
+  .play.on .ic-play { display: none; }
+  .play.on .ic-pause { display: block; }
+  .play.pulse::after { content: ''; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--amber); animation: pulse 1.8s ease-out infinite; pointer-events: none; }
+  @keyframes pulse { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(1.6); opacity: 0; } }
+  .now-text { min-width: 0; }
+  .now-text .kicker { font-size: .7rem; letter-spacing: .22em; text-transform: uppercase; color: var(--amber); margin-bottom: .2rem; }
+  .now-text h2 { font-family: var(--display); font-size: clamp(2rem, 5vw, 2.8rem); letter-spacing: .06em; font-weight: 400; color: var(--cream); line-height: .95; }
+  .now-text .where { font-size: .78rem; color: var(--cream-dim); letter-spacing: .06em; margin-top: .3rem; }
+  .now-text .hint { font-size: .8rem; color: var(--cream-dim); margin-top: .45rem; }
+  .now-text .hint b { color: var(--cream); font-weight: 400; }
+  .dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: rgba(17,17,16,.96); border-top: 1px solid var(--amber-dim); backdrop-filter: blur(6px); padding: .55rem var(--gutter) calc(.55rem + env(safe-area-inset-bottom)); display: flex; align-items: center; gap: .9rem; transform: translateY(110%); transition: transform .2s; }
+  .dock.show { transform: none; }
+  .dock .play { width: 48px; height: 48px; border-width: 1.5px; }
+  .dock .play svg { width: 20px; height: 20px; }
+  .dock .dock-text { min-width: 0; flex: 1; line-height: 1.25; }
+  .dock .dock-name { font-family: var(--display); font-size: 1.25rem; letter-spacing: .06em; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dock .dock-sub { font-size: .68rem; color: var(--cream-dim); letter-spacing: .08em; }
+  .dock a { font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--cream-dim); text-decoration: none; border-bottom: 1px solid var(--edge); white-space: nowrap; }
+  .dock a:hover { color: var(--amber); }
+  body.docked .page { padding-bottom: 6rem; }
   #groove { display: block; width: 100%; height: 300px; }
   .ends { display: flex; justify-content: space-between; font-size: .6rem; letter-spacing: .16em; text-transform: uppercase; color: var(--cream-dim); margin-top: .5rem; }
   .note { font-size: .78rem; color: var(--cream-dim); margin-top: .8rem; max-width: 70ch; line-height: 1.55; }
@@ -212,13 +238,16 @@
     #groove { height: 220px; }
     .btn { font-size: 1rem; padding: .55rem 1.1rem .45rem; }
     .origin, .save { grid-template-columns: 1fr; }
+    .play { width: 72px; height: 72px; }
+    .label .sub { text-align: left; }
   }
+  @media (prefers-reduced-motion: reduce) { .play.pulse::after { animation: none; } }
   @media (prefers-reduced-motion: reduce) { .btn-rec.on .dot { animation: none; } }
   body.embed .crumb, body.embed #labFooter { display: none; }
 </style>
 </head>
 <body>
-<div class="page">
+<div class="page" id="top">
 
 <header>
   <div>
@@ -231,15 +260,15 @@
   </div>
 </header>
 
-<section aria-labelledby="lbl-canyon">
-  <div class="label"><span id="lbl-canyon">01 &middot; Choose a canyon</span><span class="sub">real elevation, rim to rim <button class="qbtn" id="methodBtn" type="button" aria-label="How the topography was measured" title="How the topography was measured">?</button></span></div>
-  <div class="canyon-grid" id="canyonGrid" role="group" aria-label="Canyons"></div>
-</section>
-
-<section class="groove-panel" aria-live="polite">
-  <div class="panel-title">
-    <h2 id="canyonName">&nbsp;</h2>
-    <span class="where" id="canyonPlace"></span>
+<section class="groove-panel" aria-label="Now playing">
+  <div class="now">
+    <button class="play pulse" id="btnPlay" type="button" aria-pressed="false" aria-label="Play"><svg class="ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" fill="currentColor"/></svg><svg class="ic-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5h4.5v15H6zm7.5 0H18v15h-4.5z" fill="currentColor"/></svg></button>
+    <div class="now-text">
+      <div class="kicker" id="nowKicker">Ready to play</div>
+      <h2 id="canyonName">&nbsp;</h2>
+      <div class="where" id="canyonPlace"></div>
+      <div class="hint" id="playHint"></div>
+    </div>
   </div>
   <canvas id="groove" role="img" aria-label="Canyon cross-section drawn as a record groove, with a stylus for each voice"></canvas>
   <div class="ends"><span id="endA"></span><span id="endB"></span></div>
@@ -256,8 +285,13 @@
   </div>
 </section>
 
+<section aria-labelledby="lbl-canyon">
+  <div class="label"><h2 id="lbl-canyon"><span class="num">01</span>Choose a canyon</h2><span class="sub">real elevation, rim to rim <button class="qbtn" id="methodBtn" type="button" aria-label="How the topography was measured" title="How the topography was measured">?</button></span></div>
+  <div class="canyon-grid" id="canyonGrid" role="group" aria-label="Canyons"></div>
+</section>
+
 <section aria-labelledby="lbl-voices">
-  <div class="label"><span id="lbl-voices">02 &middot; Voices</span><span class="sub" id="voiceHint"></span></div>
+  <div class="label"><h2 id="lbl-voices"><span class="num">02</span>Voices</h2><span class="sub" id="voiceHint"></span></div>
   <div class="pads" id="pads" role="group" aria-label="Voices"></div>
   <div class="voice-panel" id="voicePanel" hidden>
     <div class="vp-head">
@@ -273,9 +307,8 @@
 </section>
 
 <section aria-labelledby="lbl-play">
-  <div class="label"><span id="lbl-play">03 &middot; Play</span><span class="sub">it never repeats, so stay a while</span></div>
+  <div class="label"><h2 id="lbl-play"><span class="num">03</span>Share this cut</h2><span class="sub">export it, post it, or save it with your email</span></div>
   <div class="transport">
-    <button class="btn btn-primary" id="btnPlay" type="button"><span class="dot" aria-hidden="true"></span><span id="btnPlayText">Drop the needle</span></button>
     <button class="btn btn-secondary" id="btnExport" type="button" title="Render two minutes of this cut as an MP3">Export MP3 &middot; 2:00</button>
     <button class="btn btn-secondary" id="btnCard" type="button" title="Make an image of this cut to post">Share card</button>
     <button class="btn btn-secondary" id="btnRecut" type="button" title="New seed, same canyon">Re-cut</button>
@@ -309,7 +342,7 @@
 </section>
 
 <details id="customDetails">
-  <summary><span>04 &middot; Cut your own groove</span></summary>
+  <summary><span><span class="num" style="font-family:var(--mono);font-size:.8rem;letter-spacing:.2em;margin-right:.7rem">04</span><span style="font-family:var(--display);font-size:1.5rem;letter-spacing:.08em;color:var(--cream);text-transform:none">Cut your own groove</span></span></summary>
   <div class="custom">
     <p>Two points on earth, any terrain between them. Fetched live.</p>
     <div class="fields">
@@ -342,6 +375,12 @@
 
 <footer id="labFooter"></footer>
 
+</div>
+
+<div class="dock" id="dock" role="region" aria-label="Playback">
+  <button class="play" id="dockPlay" type="button" aria-pressed="false" aria-label="Play"><svg class="ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" fill="currentColor"/></svg><svg class="ic-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5h4.5v15H6zm7.5 0H18v15h-4.5z" fill="currentColor"/></svg></button>
+  <div class="dock-text"><div class="dock-name" id="dockName"></div><div class="dock-sub" id="dockSub"></div></div>
+  <a href="#top" id="dockTop">Top</a>
 </div>
 
 <dialog id="infoDialog" aria-labelledby="dlgTitle">
@@ -925,7 +964,7 @@ function stop(quiet) {
   clearInterval(audio.timer); audio.timer = null;
   audio.playing = false;
   ui.playing(false);
-  if (!quiet) setStatus('Needle lifted.');
+  if (!quiet) setStatus('Paused. Press play to start the cut again, or export it.');
 }
 function restartIfPlaying() { if (audio.playing) { stop(true); setTimeout(play, 60); } }
 function liveStart(k) { if (audio.playing) audio.eng.startVoice(k); }
@@ -1144,6 +1183,7 @@ const ui = {
     ui.keyMood();
     document.title = 'Canyon Groove · ' + c.name;
     $('mCanyon').value = c.name;
+    ui.hint();
     draw();
   },
   keyMood() {
@@ -1187,7 +1227,20 @@ const ui = {
     ui.voicePanelValues();
   },
   voicePanelValues() { const k = state.tuning; if (!k) return; $('vpSliders').querySelectorAll('[data-val]').forEach(s => { s.textContent = state.voice[k][s.dataset.val]; }); },
-  playing(onoff) { $('btnPlay').classList.toggle('on', onoff); $('btnPlayText').textContent = onoff ? 'Lift the needle' : 'Drop the needle'; $('discCaption').textContent = onoff ? 'playing · ' + state.canyon.id : '33⅓ · side A'; },
+  playing(onoff) {
+    for (const id of ['btnPlay', 'dockPlay']) { const b = $(id); b.classList.toggle('on', onoff); b.classList.remove('pulse'); b.setAttribute('aria-pressed', String(onoff)); b.setAttribute('aria-label', onoff ? 'Pause' : 'Play'); }
+    $('nowKicker').textContent = onoff ? 'Now playing' : 'Ready to play';
+    $('discCaption').textContent = onoff ? 'playing · ' + state.canyon.id : '33⅓ · side A';
+    ui.hint();
+  },
+  hint() {
+    const c = state.canyon;
+    $('playHint').innerHTML = audio.playing
+      ? 'The needle is in the groove. Try another canyon below, or open a voice’s <b>tune</b> tab. Space bar pauses.'
+      : 'Press play to drop the needle on <b>' + esc(c.name) + '</b>. Then change the canyon or tune the voices.';
+    $('dockName').textContent = c.name;
+    $('dockSub').textContent = (audio.playing ? 'Playing · ' : 'Paused · ') + NOTE_NAMES[effectiveRoot()] + ' ' + MOODS[effectiveMood()].label.toLowerCase();
+  },
 };
 
 /* --------------------------------------------------------------- drawing */
@@ -1268,6 +1321,11 @@ function boot() {
   applyHash(true);
   ui.canyonGrid(); ui.pads(); ui.canyon(); writeHash();
   $('btnPlay').addEventListener('click', () => audio.playing ? stop() : play());
+  $('dockPlay').addEventListener('click', () => audio.playing ? stop() : play());
+  $('dockTop').addEventListener('click', e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([en]) => { const show = !en.isIntersecting && en.boundingClientRect.top < 0; $('dock').classList.toggle('show', show); document.body.classList.toggle('docked', show); }, { threshold: 0 }).observe($('btnPlay'));
+  }
   $('btnExport').addEventListener('click', exportMp3);
   $('btnCard').addEventListener('click', shareCard);
   $('btnRecut').addEventListener('click', () => { state.seed = (Math.random() * 1e9) >>> 0; writeHash(); restartIfPlaying(); setStatus('New cut, seed ' + state.seed + '.'); });
@@ -1303,7 +1361,7 @@ function boot() {
   window.addEventListener('resize', draw);
   document.addEventListener('keydown', e => { if (e.code === 'Space' && !/input|select|textarea|button/i.test(e.target.tagName) && !$('infoDialog').open) { e.preventDefault(); audio.playing ? stop() : play(); } });
   document.addEventListener('visibilitychange', () => { if (!document.hidden && audio.ctx && audio.ctx.state === 'suspended' && audio.playing) audio.ctx.resume(); });
-  setStatus('Pick a canyon, then drop the needle. Space bar works too.');
+  setStatus('Export a two-minute MP3, post a share card, or save the cut with your email.');
   loop();
 }
 document.addEventListener('DOMContentLoaded', boot);
