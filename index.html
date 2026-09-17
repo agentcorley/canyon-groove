@@ -119,12 +119,13 @@
   .ends { display: flex; justify-content: space-between; font-size: .6rem; letter-spacing: .16em; text-transform: uppercase; color: var(--cream-dim); margin-top: .5rem; }
   .note { font-size: .78rem; color: var(--cream-dim); margin-top: .8rem; max-width: 70ch; line-height: 1.55; }
   .note em { color: var(--cream); font-style: normal; }
-  .note button.link { background: none; border: 0; color: var(--amber); font: inherit; cursor: pointer; padding: 0; border-bottom: 1px solid var(--amber-dim); }
   .readout { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .6rem 1rem; margin-top: 1rem; padding-top: .8rem; border-top: 1px dashed var(--edge); }
   .readout div { font-size: .6rem; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); line-height: 1.5; }
   .readout b { display: block; font-size: .85rem; letter-spacing: 0; text-transform: none; color: var(--cream); font-weight: 400; }
   .readout select { background: transparent; border: 0; border-bottom: 1px solid var(--amber-dim); color: var(--cream); font-family: inherit; font-size: .85rem; padding: 0 0 .1rem; cursor: pointer; outline: none; max-width: 100%; }
   .readout select:focus { border-color: var(--amber); }
+  .readout button.link { background: none; border: 0; padding: 0; font: inherit; font-size: .85rem; color: var(--amber); cursor: pointer; border-bottom: 1px solid var(--amber-dim); }
+  .readout button.link:hover { border-color: var(--amber); }
 
   /* Voice pads */
   .pads { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .6rem; }
@@ -181,18 +182,26 @@
   .status .warn { color: var(--rec); }
   .progress { height: 2px; background: var(--edge); margin-top: .5rem; display: none; }
   .progress i { display: block; height: 100%; width: 0; background: var(--amber); transition: width .2s; }
-  .share-box { display: flex; gap: .5rem; align-items: stretch; margin-top: .9rem; }
-  .share-box input { flex: 1; min-width: 0; background: var(--groove); border: 1px solid var(--edge); color: var(--cream-dim); font-family: inherit; font-size: .72rem; padding: .55rem .7rem; outline: none; }
-  .share-box input:focus { border-color: var(--amber-dim); color: var(--cream); }
 
-  /* Save your cut */
-  .save { margin-top: 1.4rem; border: 1px solid var(--edge); background: var(--surface); padding: 1rem 1.1rem 1.1rem; display: grid; grid-template-columns: 1.1fr 1fr; gap: 1rem 2rem; align-items: start; }
-  .save h3 { font-family: var(--display); font-size: 1.5rem; letter-spacing: .08em; font-weight: 400; color: var(--cream); line-height: 1; margin-bottom: .4rem; }
-  .save p { font-size: .76rem; color: var(--cream-dim); line-height: 1.55; }
-  .save form { display: grid; gap: .5rem; }
-  .save input[type=text], .save input[type=email] { width: 100%; background: var(--groove); border: 1px solid var(--edge); color: var(--cream); font-family: inherit; font-size: .82rem; padding: .55rem .7rem; outline: none; }
-  .save input:focus { border-color: var(--amber-dim); }
-  .save .fine { font-size: .62rem; color: var(--faint); line-height: 1.5; }
+  /* Share */
+  .share-row { display: grid; grid-template-columns: 1.3fr 1fr auto; gap: .6rem; align-items: stretch; }
+  .share-row input { min-width: 0; background: var(--groove); border: 1px solid var(--edge); color: var(--cream); font-family: inherit; font-size: .95rem; padding: .7rem .8rem; outline: none; }
+  .share-row input:focus { border-color: var(--amber); }
+  .share-row .btn { padding-left: 2rem; padding-right: 2rem; justify-content: center; }
+  .share-hint { font-size: .8rem; color: var(--cream-dim); margin-top: .6rem; }
+  .share-hint b { color: var(--cream); font-weight: 400; }
+  .share-more { display: flex; flex-wrap: wrap; gap: .4rem 1.6rem; margin-top: .6rem; }
+  .share-more .link, .note button.link { background: none; border: 0; padding: 0; font: inherit; font-size: .78rem; letter-spacing: .04em; color: var(--cream-dim); cursor: pointer; border-bottom: 1px solid var(--edge); line-height: 1.6; }
+  .share-more .link:hover, .note button.link:hover { color: var(--amber); border-color: var(--amber); }
+  .keep { margin-top: 1.6rem; padding-top: 1.1rem; border-top: 1px dashed var(--edge); display: grid; grid-template-columns: 1fr auto auto; gap: .6rem 1rem; align-items: center; }
+  .keep-text { font-size: .82rem; color: var(--cream-dim); line-height: 1.5; }
+  .keep-text b { color: var(--cream); font-weight: 400; }
+  .keep input[type=email] { width: min(100%, 280px); background: var(--groove); border: 1px solid var(--edge); color: var(--cream); font-family: inherit; font-size: .9rem; padding: .6rem .8rem; outline: none; }
+  .keep input:focus { border-color: var(--amber); }
+  .keep .btn { font-size: 1rem; }
+  .now-text .cut-title { font-family: var(--display); font-size: 1.35rem; letter-spacing: .06em; color: var(--amber); margin-top: .35rem; }
+  .now-text .cut-title span { color: var(--cream-dim); font-family: var(--mono); font-size: .72rem; letter-spacing: .1em; }
+  @media (max-width: 700px) { .share-row, .keep { grid-template-columns: 1fr; } .keep input[type=email] { width: 100%; } }
 
   /* Origin */
   .origin { display: grid; grid-template-columns: minmax(220px, 380px) 1fr; gap: 1.6rem 2.2rem; align-items: start; }
@@ -227,22 +236,6 @@
   .info-foot { grid-column: 1 / -1; font-size: .64rem; color: var(--faint); letter-spacing: .04em; border-top: 1px dashed var(--edge); padding-top: .6rem; margin-top: .2rem; }
   @media (max-width: 700px) { .info-body { grid-template-columns: 1fr; } .info-actions { min-width: 0; } }
 
-  /* Pass the needle */
-  .pass { display: grid; grid-template-columns: 1fr 1fr auto; gap: .8rem; align-items: end; }
-  .pass .step label { display: flex; align-items: center; gap: .5rem; font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--amber); margin-bottom: .35rem; }
-  .pass .n { width: 18px; height: 18px; border-radius: 50%; background: var(--amber); color: var(--bg); font-size: .62rem; font-weight: 700; display: inline-grid; place-items: center; letter-spacing: 0; }
-  .pass input { width: 100%; background: var(--groove); border: 1px solid var(--edge); color: var(--cream); font-family: inherit; font-size: .9rem; padding: .6rem .7rem; outline: none; }
-  .pass input:focus { border-color: var(--amber); }
-  .pass .btn { width: 100%; justify-content: center; padding-top: .75rem; padding-bottom: .62rem; }
-  .pass-hint { font-size: .78rem; color: var(--cream-dim); margin-top: .8rem; max-width: 72ch; line-height: 1.55; }
-  .pass-hint b { color: var(--cream); font-weight: 400; }
-  .passed { border: 1px solid var(--amber-dim); background: var(--amber-glow); padding: .6rem .9rem; font-size: .8rem; color: var(--cream); margin-top: .7rem; display: flex; gap: .6rem; align-items: baseline; flex-wrap: wrap; }
-  .passed .tag { font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--amber); }
-  .now-text .cut-title { font-family: var(--display); font-size: 1.35rem; letter-spacing: .06em; color: var(--amber); margin-top: .35rem; }
-  .now-text .cut-title span { color: var(--cream-dim); font-family: var(--mono); font-size: .72rem; letter-spacing: .1em; }
-  .more-ways { margin-top: 1.4rem; padding-top: 1rem; border-top: 1px dashed var(--edge); }
-  .more-ways .k { font-size: .62rem; letter-spacing: .22em; text-transform: uppercase; color: var(--faint); margin-bottom: .6rem; }
-  @media (max-width: 700px) { .pass { grid-template-columns: 1fr; } }
 
   @media (max-width: 700px) {
     header { flex-direction: column; align-items: flex-start; }
@@ -250,7 +243,7 @@
     #disc { width: 84px; height: 84px; }
     #groove { height: 220px; }
     .btn { font-size: 1rem; padding: .55rem 1.1rem .45rem; }
-    .origin, .save { grid-template-columns: 1fr; }
+    .origin { grid-template-columns: 1fr; }
     .play { width: 72px; height: 72px; }
     .label .sub { text-align: left; }
     .canyon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
@@ -306,6 +299,7 @@
     <div>Loops <b id="rLoops"></b></div>
     <div>Echo <b id="rEcho"></b></div>
     <div>Source <b id="rSource"></b></div>
+    <div>Cut <b><button class="link" id="btnRecut" type="button" title="Same canyon, a new seed">Re-cut this canyon</button></b></div>
   </div>
 </section>
 
@@ -333,45 +327,31 @@
 
 <section aria-labelledby="lbl-play">
   <div class="label"><h2 id="lbl-play"><span class="num">03</span>Share</h2><span class="sub">capture what you created</span></div>
-  <div class="pass">
-    <div class="step"><label for="cutName"><span class="n">1</span>Name your cut</label><input id="cutName" maxlength="40" placeholder="Dusk over the South Rim" autocomplete="off"></div>
-    <div class="step"><label for="byName"><span class="n">2</span>Sign it</label><input id="byName" maxlength="24" placeholder="Your first name" autocomplete="given-name"></div>
-    <div class="step"><label for="btnPass"><span class="n">3</span>Send it</label><button class="btn btn-primary" id="btnPass" type="button">Pass the needle</button></div>
+  <div class="share-row">
+    <input id="cutName" maxlength="40" placeholder="Name your cut" autocomplete="off" aria-label="Name your cut">
+    <input id="byName" maxlength="24" placeholder="Your first name" autocomplete="given-name" aria-label="Your first name">
+    <button class="btn btn-primary" id="btnPass" type="button">Share</button>
   </div>
-  <p class="pass-hint" id="passHint">You get a link with your name on it and a card to post. Whoever opens the link hears your exact cut, sees who passed it, and gets the same three steps. Every pass is a new pressing.</p>
+  <p class="share-hint" id="passHint">Your link and a card, with your name on it.</p>
   <div class="status" id="status"></div>
   <div class="progress" id="progress"><i></i></div>
-  <div class="share-box">
-    <input id="shareUrl" type="text" readonly aria-label="Share link" spellcheck="false">
-    <button class="btn btn-secondary" id="btnCopy" type="button" style="font-size:1rem">Copy</button>
-  </div>
-  <div class="more-ways">
-    <div class="k">More ways to take it with you</div>
-    <div class="transport">
-      <button class="btn btn-secondary" id="btnExport" type="button" title="Render two minutes of this cut as an MP3">Export MP3 &middot; 2:00</button>
-      <button class="btn btn-secondary" id="btnCard" type="button" title="Make an image of this cut to post">Share card</button>
-      <button class="btn btn-secondary" id="btnRecut" type="button" title="New seed, same canyon">Re-cut</button>
-      <button class="btn btn-secondary" id="btnShare" type="button">Share link</button>
-    </div>
+  <div class="share-more">
+    <button class="link" id="btnCopy" type="button">Copy link</button>
+    <button class="link" id="btnExport" type="button" title="Two minutes of this cut, rendered as an MP3">Download MP3</button>
+    <button class="link" id="btnCard" type="button">Save card</button>
   </div>
 
-  <div class="save" id="saveBox">
-    <div>
-      <h3>Save this cut</h3>
-      <p>Add your email and the cut above is filed under your name with <em>The Catalog</em>, Jonathan Corley’s weekly dispatch on ideas, tools, and the people building tomorrow’s experiences. You get the newsletter, the cut stays yours, and the link is copied the moment you save.</p>
-    </div>
-    <form id="saveForm" action="https://buttondown.com/api/emails/embed-subscribe/catalog" method="post" target="_blank">
-      <input type="hidden" name="embed" value="1">
-      <input type="hidden" name="tag" value="canyon-groove">
-      <input type="hidden" name="metadata__source" value="canyon-groove">
-      <input type="hidden" name="metadata__cut-name" id="mCutName" value="">
-      <input type="hidden" name="metadata__cut-url" id="mCutUrl" value="">
-      <input type="hidden" name="metadata__canyon" id="mCanyon" value="">
-      <input type="email" name="email" placeholder="you@example.com" required autocomplete="email" aria-label="Email">
-      <button class="btn btn-primary" type="submit" style="font-size:1rem;justify-content:center">Save &amp; subscribe</button>
-      <span class="fine">Confirmation arrives from Buttondown. Unsubscribe any time; the cut link still works.</span>
-    </form>
-  </div>
+  <form class="keep" id="saveForm" action="https://buttondown.com/api/emails/embed-subscribe/catalog" method="post" target="_blank">
+    <input type="hidden" name="embed" value="1">
+    <input type="hidden" name="tag" value="canyon-groove">
+    <input type="hidden" name="metadata__source" value="canyon-groove">
+    <input type="hidden" name="metadata__cut-name" id="mCutName" value="">
+    <input type="hidden" name="metadata__cut-url" id="mCutUrl" value="">
+    <input type="hidden" name="metadata__canyon" id="mCanyon" value="">
+    <div class="keep-text"><b>Keep this cut.</b> Saved under your name with <em>The Catalog</em>, my weekly newsletter.</div>
+    <input type="email" name="email" placeholder="you@example.com" required autocomplete="email" aria-label="Email">
+    <button class="btn btn-secondary" type="submit">Save</button>
+  </form>
 </section>
 
 <section class="origin" aria-label="Where this came from">
@@ -659,7 +639,6 @@ function shareHref() { return CCLab.shareBase() + hashString(); }
 function writeHash() {
   const h = hashString();
   if (location.hash !== h) { try { history.replaceState(null, '', h); } catch (e) { /* ignore */ } }
-  $('shareUrl').value = shareHref();
 }
 
 /* ----------------------------------------------------------------- engine */
@@ -1128,7 +1107,7 @@ function pressingNo() { return String(state.seed % 10000).padStart(4, '0'); }
 async function passNeedle() {
   const name = cleanName($('cutName').value, 40) || (state.canyon.name + ' cut');
   const by = cleanName($('byName').value, 24);
-  if (!by) { $('byName').focus(); setStatus('<span class="warn">Sign it first.</span> A first name is enough.'); return; }
+  if (!by) { $('byName').focus(); setStatus('<span class="warn">Add your first name first.</span>'); return; }
   state.cut = { name, by, gen: (state.cut.gen || 0) + 1 };
   writeHash(); ui.cutInfo();
   const url = shareHref();
@@ -1140,13 +1119,13 @@ async function passNeedle() {
     try {
       if (cardFile && navigator.canShare && navigator.canShare({ files: [cardFile] })) await navigator.share({ files: [cardFile], title: payload.title, text: text + ' ' + url });
       else await navigator.share(payload);
-      setStatus('<span class="ok">Passed.</span> Pressing ' + ordinal(state.cut.gen) + ', number ' + pressingNo() + '.');
+      setStatus('<span class="ok">Shared.</span> Pressing ' + ordinal(state.cut.gen) + ', number ' + pressingNo() + '.');
       return;
     } catch (e) { if (e && e.name === 'AbortError') return; }
   }
   await copyLink(true);
   if (cardFile) { const a = document.createElement('a'); a.href = URL.createObjectURL(cardFile); a.download = cardFile.name; document.body.appendChild(a); a.click(); a.remove(); }
-  setStatus('<span class="ok">Link copied and card saved.</span> Post them together. Pressing ' + ordinal(state.cut.gen) + ', number ' + pressingNo() + '.');
+  setStatus('<span class="ok">Link copied and card saved.</span> Post them together.');
 }
 async function share() {
   const url = shareHref(), title = 'Canyon Groove: ' + state.canyon.name;
@@ -1157,7 +1136,7 @@ async function share() {
 async function copyLink(quiet) {
   const url = shareHref();
   try { await navigator.clipboard.writeText(url); if (!quiet) setStatus('<span class="ok">Link copied.</span> Anyone who opens it hears this cut.'); return true; }
-  catch (e) { const i = $('shareUrl'); i.focus(); i.select(); if (!quiet) setStatus('Select the link and copy it.'); return false; }
+  catch (e) { if (!quiet) setStatus('Copy this from the address bar: ' + esc(url)); return false; }
 }
 
 /* --------------------------------------------------------------- selection */
@@ -1299,8 +1278,8 @@ const ui = {
     if (cut.by) pb.innerHTML = '<span class="tag">Passed to you</span><span><b>' + esc(cut.by) + '</b> sent you this cut' + (cut.gen ? ', pressing ' + ordinal(cut.gen) : '') + '. Press play, then re-cut it and pass it on.</span>';
     if ($('cutName').value !== cut.name) $('cutName').value = cut.name;
     $('passHint').innerHTML = cut.by
-      ? 'You are holding <b>' + esc(cut.by) + '</b>’s cut. Rename it or leave it, sign it, and pass it on. Yours will be pressing ' + ordinal((cut.gen || 1) + 1) + '.'
-      : 'You get a link with your name on it and a card to post. Whoever opens the link hears your exact cut, sees who passed it, and gets the same three steps. Every pass is a new pressing.';
+      ? '<b>' + esc(cut.by) + '</b>’s cut. Rename it if you like, add your name, and share it on.'
+      : 'Your link and a card, with your name on it.';
   },
   hint() {
     const c = state.canyon;
@@ -1400,7 +1379,7 @@ function boot() {
   ui.canyonGrid(); ui.pads(); ui.canyon();
   // A random start leaves the address bar bare so a refresh deals a new hand.
   // The cut is pinned into the URL the moment you play or change anything.
-  if (location.hash.length > 1) writeHash(); else $('shareUrl').value = shareHref();
+  if (location.hash.length > 1) writeHash();
   $('btnPlay').addEventListener('click', () => audio.playing ? stop() : play());
   $('dockPlay').addEventListener('click', () => audio.playing ? stop() : play());
   $('dockTop').addEventListener('click', e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
@@ -1412,10 +1391,8 @@ function boot() {
   $('btnPass').addEventListener('click', passNeedle);
   $('cutName').addEventListener('change', () => { state.cut.name = cleanName($('cutName').value, 40); writeHash(); ui.cutInfo(); });
   $('byName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); passNeedle(); } });
-  $('btnRecut').addEventListener('click', () => { state.seed = (Math.random() * 1e9) >>> 0; writeHash(); restartIfPlaying(); setStatus('New cut, seed ' + state.seed + '.'); });
-  $('btnShare').addEventListener('click', share);
+  $('btnRecut').addEventListener('click', () => { state.seed = (Math.random() * 1e9) >>> 0; writeHash(); restartIfPlaying(); ui.hint(); });
   $('btnCopy').addEventListener('click', () => copyLink());
-  $('shareUrl').addEventListener('focus', e => e.target.select());
   $('methodBtn').addEventListener('click', e => methodDialog(e.currentTarget));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfo(); });
   $('keySel').addEventListener('change', e => { state.keyOverride = e.target.value === 'auto' ? null : parseInt(e.target.value, 10); writeHash(); restartIfPlaying(); });
@@ -1426,7 +1403,7 @@ function boot() {
     const name = cleanName($('cutName').value, 40) || 'Untitled cut';
     $('mCutName').value = name; $('mCutUrl').value = shareHref(); $('mCanyon').value = state.canyon.name;
     copyLink(true);
-    setStatus('<span class="ok">Saved “' + esc(name) + '”.</span> Link copied. Confirm the email from The Catalog when it lands.');
+    setStatus('<span class="ok">Saved “' + esc(name) + '”.</span> Link copied. Confirm the email from Buttondown when it lands.');
   });
   window.addEventListener('hashchange', () => {
     const prev = [state.canyon.id, state.keyOverride, state.moodOverride, state.seed].join('|'), prevVoices = voiceSig();
@@ -1440,7 +1417,7 @@ function boot() {
   window.addEventListener('resize', draw);
   document.addEventListener('keydown', e => { if (e.code === 'Space' && !/input|select|textarea|button/i.test(e.target.tagName)) { e.preventDefault(); audio.playing ? stop() : play(); } });
   document.addEventListener('visibilitychange', () => { if (!document.hidden && audio.ctx && audio.ctx.state === 'suspended' && audio.playing) audio.ctx.resume(); });
-  setStatus('Export a two-minute MP3, post a share card, or save the cut with your email.');
+  setStatus('');
   loop();
 }
 document.addEventListener('DOMContentLoaded', boot);
