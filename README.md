@@ -12,7 +12,7 @@ Static site, no build step. Everything is synthesized in the browser with the We
 
 ![A stylus in a record groove under an electron microscope](groove.jpg)
 
-This photograph, posted to [r/vinyl by Total_Doofuss484](https://www.reddit.com/r/vinyl/comments/zuapb3/a_close_up_picture_of_a_record_groove_and_needle/) in 2022. The groove walls looked like canyon walls, and the shape of the walls is the music. This app asks whether that works in reverse.
+This photograph, posted to [r/vinyl by Total_Doofuss484](https://www.reddit.com/r/vinyl/comments/zuapb3/a_close_up_picture_of_a_record_groove_and_needle/) in 2022. When I saw it, where the magnified microscopic record player needle sits between the vinyl record’s tracks, I thought the groove walls looked like canyon walls. They look ridged and layered, and the shape of those walls is the music. I wondered whether it works the other way round. Could you take a real canyon, treat the cross-section as a groove, and use AI to drag a needle through the canyon grooves?
 
 ## How the terrain writes the music
 
@@ -59,13 +59,13 @@ Every voice has seven settings, 0 to 100, under its **tune** tab: **Level**, **A
 | `at=36.057/-112.143/36.2/-112.05` | A custom transect, start lat/lon then end lat/lon, fetched live. |
 | `n=Bright%20Angel` | Name for a custom transect. |
 
-The app rewrites the hash with `history.replaceState` on every change, so the address bar is always a shareable link.
+The app rewrites the hash with `history.replaceState` on every change, so the address bar is always a shareable link. A visit with no hash at all gets a random canyon and a random hand of two or three voices, so the front door never sounds the same twice.
 
 ## Sharing and capture
 
 - **Pass the needle** is the main share loop. Name your cut, sign it, and press the button. On a phone the share sheet opens with the card image and a link that carries `cut`, `by`, and `gen`; on desktop the link is copied and the card downloads. Whoever opens the link sees who passed it, hears the exact cut, and gets the same three steps. Every pass adds a pressing.
 - **Share link** uses the Web Share API on phones and copies the link elsewhere.
-- **Share card** renders a 1080 by 1350 PNG of the cut (profile, cut name, who cut it, pressing number, key, mood, voices, link) and hands it to the share sheet, or downloads it.
+- **Share card** renders a 1080 by 1350 PNG of the cut (profile, cut name, who cut it, pressing number, key, mood, voices, link) over a photograph of that canyon, and hands it to the share sheet, or downloads it. Photos live in `images/` with `manifest.json` and `CREDITS.md`; 92 Unsplash-licensed shots, five to seven per canyon, a generic pool for the two canyons with no usable photos (Cotahuasi borrows Colca’s, Kali Gandaki borrows the Nanga Parbat set). `IMAGE_BASE` in `index.html` can point at another host, such as WordPress media, if that host sends CORS headers.
 - **Export MP3** renders two minutes offline with the same engine and encodes a 192 kbps MP3 in the browser with [lamejs](https://github.com/zhuker/lamejs). Falls back to WAV if the encoder cannot load. Takes a few seconds.
 - **Save this cut** posts name and email to Buttondown as a subscriber to *The Catalog*, tagged `canyon-groove`, with the cut’s name, URL, and canyon stored as subscriber metadata. Buttondown handles confirmation. The link is copied to the clipboard on save.
 - The footer carries a plain **Subscribe** form to the same list, tagged `canyon-groove`, plus the site’s navigation and other links. Both hide in embed mode.
@@ -137,6 +137,7 @@ Settings, Pages, deploy from `main` root. Works the same way; only the origin ch
 | `wordpress/preview.html` | Local stand-in for the WordPress page, to test the embed with a static server |
 | `canyons.json` | Elevation dataset with coordinates, notes, and official sources |
 | `groove.jpg` | The photograph that started it |
+| `images/` | Canyon photographs for the share card, with `manifest.json` and `CREDITS.md` |
 | `og.png` | Social preview image |
 | `vercel.json` | Clean URLs and a cache header |
 | `archive/prototype-v0.html` | The original prototype |

@@ -138,8 +138,11 @@
   .pad .pad-name { font-weight: 700; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; }
   .pad .pad-inst { font-size: .68rem; color: var(--amber); letter-spacing: .08em; }
   .pad .pad-hint { font-size: .66rem; opacity: .7; line-height: 1.4; }
-  .pad-tune { background: transparent; border: 0; border-left: 1px solid var(--edge); color: var(--faint); cursor: pointer; padding: 0 .6rem; min-width: 44px; font-size: .58rem; letter-spacing: .2em; text-transform: uppercase; writing-mode: vertical-rl; transform: rotate(180deg); }
+  .pad-tune { background: transparent; border: 0; border-left: 1px solid var(--edge); color: var(--faint); cursor: pointer; padding: 0 .6rem; min-width: 48px; display: grid; place-items: center; }
+  .pad-tune svg { width: 24px; height: 24px; display: block; transition: transform .25s, color .15s; }
   .pad-tune:hover, .pad.tuning .pad-tune { color: var(--amber); }
+  .pad.tuning .pad-tune svg { transform: rotate(120deg); }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
   /* Voice panel */
   .voice-panel { margin-top: .6rem; border: 1px solid var(--edge); background: var(--surface); padding: 1rem 1.1rem 1.1rem; }
@@ -398,7 +401,7 @@
     <figcaption>A stylus in a record groove under an electron microscope. Posted to <a href="https://www.reddit.com/r/vinyl/comments/zuapb3/a_close_up_picture_of_a_record_groove_and_needle/" rel="noopener">r/vinyl</a> by Total_Doofuss484, 2022.</figcaption>
   </figure>
   <div class="about">
-    <p><strong>Where this came from.</strong> This photograph. The groove walls looked like canyon walls, ridged and layered, and the shape of those walls <em>is</em> the music. The obvious question was whether it works the other way round. Take a real canyon, treat the cross-section as a groove, and ride a needle through it.</p>
+    <p><strong>Where this came from.</strong> When I saw this photograph, where the magnified microscopic record player needle sits between the vinyl record’s tracks I thought the groove walls looked like canyon walls. They look ridged and layered, and the shape of those walls is the music. I wondered whether it works the other way round. Could you take a real canyon, treat the cross-section as a groove, and use AI to drag a needle through the canyon grooves?</p>
     <p><strong>How it plays.</strong> Each canyon is a real elevation transect, rim to rim, 100 samples. The floor elevation picks the key. The canyon’s symmetry picks the mood: balanced walls play bright, lopsided ones play dark. Every voice has its own stylus crossing the profile at its own speed, and the speeds never divide evenly, so the voices drift in and out of phase the way Brian Eno’s tape loops did. Notes ring when a stylus crosses a contour line, so steep walls chime and flat floors fall silent. Echo scales with depth. Deeper canyon, longer tail.</p>
     <p><strong>Make it yours.</strong> Every voice has a handful of instruments and its own level, attack, decay, tone, grit, echo, and delay. The URL carries all of it, plus the canyon, key, mood, and seed. Copy the link and someone else hears the same cut. Export two minutes and you get an MP3.</p>
   </div>
@@ -541,6 +544,10 @@ const MOOD_ALIAS = {}; Object.keys(MOODS).forEach(k => { MOOD_ALIAS[k] = k; MOOD
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const LOOP_RATIOS = { bedrock: 1.0, strata: 1.618, contours: 0.786, wind: 2.236, river: 1.272 };
 const EXPORT_SECONDS = 120;
+/* Canyon photographs for the share card. images/manifest.json lists them with credits.
+   IMAGE_BASE can point at another host (for example WordPress media) as long as it sends CORS headers. */
+const IMAGE_BASE = 'images/';
+let IMAGES = [];
 const LAME_URL = 'https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.all.js';
 
 const METHOD_TEXT = [
@@ -1078,11 +1085,33 @@ async function shareCard() {
   const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
   setStatus('<span class="ok">Card saved.</span> Post it with the link.');
 }
+function pickPhoto() {
+  if (!IMAGES.length) return null;
+  const NEIGHBOR = { cotahuasi: 'colca', kali: 'indus' };   // no usable photos of their own
+  const want = state.canyon.id;
+  let mine = IMAGES.filter(i => i.canyon === want);
+  if (!mine.length && NEIGHBOR[want]) mine = IMAGES.filter(i => i.canyon === NEIGHBOR[want]);
+  const pool = mine.length ? mine : IMAGES.filter(i => !i.canyon || i.canyon === 'generic');
+  if (!pool.length) return null;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+function loadImage(src) { return new Promise((res, rej) => { const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => res(im); im.onerror = rej; im.src = src; }); }
 async function renderCard() {
   const W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const ctx = cv.getContext('2d'), T = state.T;
   try { await document.fonts.load('120px "Bebas Neue"'); await document.fonts.load('28px "Courier Prime"'); } catch (e) {}
   ctx.fillStyle = '#0a0a08'; ctx.fillRect(0, 0, W, H);
+  const photo = pickPhoto();
+  if (photo) {
+    try {
+      const im = await loadImage(IMAGE_BASE + photo.file);
+      const s = Math.max(W / im.width, H / im.height), dw = im.width * s, dh = im.height * s;
+      ctx.globalAlpha = 1; ctx.drawImage(im, (W - dw) / 2, (H - dh) / 2, dw, dh);
+      const veil = ctx.createLinearGradient(0, 0, 0, H);
+      veil.addColorStop(0, 'rgba(10,10,8,0.82)'); veil.addColorStop(0.42, 'rgba(10,10,8,0.55)'); veil.addColorStop(0.8, 'rgba(10,10,8,0.78)'); veil.addColorStop(1, 'rgba(10,10,8,0.94)');
+      ctx.fillStyle = veil; ctx.fillRect(0, 0, W, H);
+    } catch (e) { /* card still works without the photo */ }
+  }
   const padX = 80, top = 560, bottom = 1080;
   const X = p => padX + p * (W - padX * 2), Y = e => top + (1 - (e - T.min) / T.relief) * (bottom - top);
   const bands = Math.floor(T.relief / T.contour);
@@ -1110,6 +1139,7 @@ async function renderCard() {
   ctx.fillStyle = '#7d7566'; ctx.font = '24px "Courier Prime", monospace';
   const url = shareHref().replace(/^https?:\/\//, ''); ctx.fillText(url.length > 70 ? url.slice(0, 69) + '…' : url, padX, 1205);
   ctx.fillStyle = '#4a463d'; ctx.font = '22px "Courier Prime", monospace'; ctx.fillText('CUMBERLAND COAST  ·  REAL TOPOGRAPHY, PLAYED AS A RECORD', padX, 1270);
+  if (photo && photo.credit) { ctx.textAlign = 'right'; ctx.fillStyle = '#7d7566'; ctx.font = '20px "Courier Prime", monospace'; ctx.fillText('PHOTO: ' + photo.credit.toUpperCase() + (photo.source ? ' / ' + photo.source.toUpperCase() : ''), W - padX, 1305); ctx.textAlign = 'left'; }
   const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
   return new File([blob], 'canyon-groove-' + state.canyon.id + '-' + pressingNo() + '.png', { type: 'image/png' });
 }
@@ -1283,7 +1313,7 @@ const ui = {
       for (const k of ORDER) {
         const d = document.createElement('div'); d.className = 'pad'; d.dataset.key = k; d.style.setProperty('--pad-color', LAYERS[k].color);
         d.innerHTML = '<button type="button" class="pad-main" aria-pressed="false"><span class="led" aria-hidden="true"></span><span class="pad-name">' + LAYERS[k].label + '</span><span class="pad-inst"></span><span class="pad-hint">' + LAYERS[k].hint + '</span></button>'
-          + '<button type="button" class="pad-tune" aria-expanded="false" title="Instrument and settings for ' + LAYERS[k].label + '">tune</button>';
+          + '<button type="button" class="pad-tune" aria-expanded="false" title="Instrument and settings for ' + LAYERS[k].label + '"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 12l4.2-4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><path d="M4.6 17.5l1.3-.9M19.4 17.5l-1.3-.9M12 2.2v1.6M3.2 12h1.6M19.2 12h1.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".55"/></svg><span class="vh">Tune ' + LAYERS[k].label + '</span></button>';
         d.querySelector('.pad-main').addEventListener('click', () => toggleLayer(k));
         d.querySelector('.pad-tune').addEventListener('click', () => ui.tune(state.tuning === k ? null : k));
         el.appendChild(d);
@@ -1404,17 +1434,25 @@ function applyHash(initial) {
   const h = parseHash();
   state.keyOverride = h.key; state.moodOverride = h.mood;
   for (const k of ORDER) { const v = defaultVoice(k); if (h.inst[k]) v.inst = h.inst[k]; if (h.params[k]) Object.assign(v, h.params[k]); state.voice[k] = v; }
-  if (h.layers.length) state.layers = new Set(h.layers); else if (initial) state.layers = new Set(DEFAULT_LAYERS);
+  if (h.layers.length) state.layers = new Set(h.layers);
+  else if (initial) {
+    // A fresh visit gets a random hand: two or three voices, at least one of them a bed.
+    const pool = ORDER.slice(), pick = [], n = 2 + Math.floor(Math.random() * 2);
+    pick.push(Math.random() < 0.5 ? 'bedrock' : 'strata');
+    while (pick.length < n) { const k = pool[Math.floor(Math.random() * pool.length)]; if (!pick.includes(k)) pick.push(k); }
+    state.layers = new Set(ORDER.filter(k => pick.includes(k)));
+  }
   if (h.seed != null) state.seed = h.seed; else if (initial || !state.seed) state.seed = (Math.random() * 1e9) >>> 0;
   state.cut = { name: h.cut, by: h.by, gen: h.gen };
   if (h.at) cutCustom([h.at[0], h.at[1]], [h.at[2], h.at[3]], h.name, true);
-  const c = (h.canyonId && findCanyon(h.canyonId)) || (h.at ? null : CANYONS[0]);
+  const c = (h.canyonId && findCanyon(h.canyonId)) || (h.at ? null : (initial ? CANYONS[Math.floor(Math.random() * CANYONS.length)] : CANYONS[0]));
   if (c) { state.canyon = c; state.T = analyze(c); } else if (!state.canyon) { state.canyon = CANYONS[0]; state.T = analyze(CANYONS[0]); }
 }
 function voiceSig() { return ORDER.map(k => k + ':' + state.voice[k].inst).join(','); }
 function boot() {
   if (CCLab.isEmbedded()) { document.body.classList.add('embed'); CCLab.autoHeight(); CCLab.syncHash(); }
   CCLab.footer($('labFooter'), { tag: 'canyon-groove', source: 'canyon-groove' });
+  fetch(IMAGE_BASE + 'manifest.json').then(r => r.ok ? r.json() : []).then(j => { IMAGES = Array.isArray(j) ? j : (j.images || []); }).catch(() => {});
   applyHash(true);
   ui.canyonGrid(); ui.pads(); ui.canyon(); writeHash();
   $('btnPlay').addEventListener('click', () => audio.playing ? stop() : play());
