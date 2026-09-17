@@ -56,8 +56,6 @@ Every voice has seven settings, 0 to 100, under its **tune** tab: **Level**, **A
 | `cut=Dusk%20over%20the%20South%20Rim` | The cut’s name, given in Pass the needle. |
 | `by=Kristen` | Who passed it. Shows a “Passed to you” banner to the next listener. |
 | `gen=2` | Pressing number in the chain. Each pass adds one. |
-| `at=36.057/-112.143/36.2/-112.05` | A custom transect, start lat/lon then end lat/lon, fetched live. |
-| `n=Bright%20Angel` | Name for a custom transect. |
 
 The app rewrites the hash with `history.replaceState` on every change, so the address bar is always a shareable link. A visit with no hash at all gets a random canyon and a random hand of two or three voices, so the front door never sounds the same twice.
 
@@ -68,7 +66,8 @@ The app rewrites the hash with `history.replaceState` on every change, so the ad
 - **Share card** renders a 1080 by 1350 PNG of the cut (profile, cut name, who cut it, pressing number, key, mood, voices, link) over a photograph of that canyon, and hands it to the share sheet, or downloads it. Photos live in `images/` with `manifest.json` and `CREDITS.md`; 92 Unsplash-licensed shots, five to seven per canyon, a generic pool for the two canyons with no usable photos (Cotahuasi borrows Colca’s, Kali Gandaki borrows the Nanga Parbat set). `IMAGE_BASE` in `index.html` can point at another host, such as WordPress media, if that host sends CORS headers.
 - **Export MP3** renders two minutes offline with the same engine and encodes a 192 kbps MP3 in the browser with [lamejs](https://github.com/zhuker/lamejs). Falls back to WAV if the encoder cannot load. Takes a few seconds.
 - **Save this cut** posts name and email to Buttondown as a subscriber to *The Catalog*, tagged `canyon-groove`, with the cut’s name, URL, and canyon stored as subscriber metadata. Buttondown handles confirmation. The link is copied to the clipboard on save.
-- The footer carries a plain **Subscribe** form to the same list, tagged `canyon-groove`, plus the site’s navigation and other links. Both hide in embed mode.
+- A centered **Subscribe to The Catalog** button sits above the credits and links to buttondown.com/catalog in a new tab. It shows in embed mode too.
+- The footer carries a plain **Subscribe** form to the same list, tagged `canyon-groove`, plus the site’s navigation and other links. The footer hides in embed mode.
 
 ## The canyons
 
@@ -101,7 +100,7 @@ Relief figures are what a 90 m grid sees along a straight 100-point line, so the
 python3 -m http.server 8765
 ```
 
-Open `http://localhost:8765/`. The MP3 encoder and custom transects need network; everything else works offline.
+Open `http://localhost:8765/`. The MP3 encoder needs network for its first load; everything else works offline.
 
 ## Deploy
 

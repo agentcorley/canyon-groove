@@ -193,20 +193,6 @@
   .save input:focus { border-color: var(--amber-dim); }
   .save .fine { font-size: .62rem; color: var(--faint); line-height: 1.5; }
 
-  /* Custom transect */
-  details { border: 1px solid var(--edge); background: var(--surface); }
-  summary { cursor: pointer; padding: .9rem 1.1rem; font-size: .62rem; letter-spacing: .26em; text-transform: uppercase; color: var(--amber); list-style: none; display: flex; justify-content: space-between; }
-  summary::-webkit-details-marker { display: none; }
-  summary::after { content: '+'; color: var(--cream-dim); }
-  details[open] summary::after { content: '\2013'; }
-  .custom { padding: 0 1.1rem 1.1rem; display: grid; gap: .9rem; }
-  .custom p { font-size: .78rem; color: var(--cream-dim); }
-  .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .7rem; }
-  .field label { display: block; font-size: .58rem; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin-bottom: .3rem; }
-  .field input { width: 100%; background: var(--groove); border: 1px solid var(--edge); color: var(--cream); font-family: inherit; font-size: .82rem; padding: .5rem .6rem; outline: none; }
-  .field input:focus { border-color: var(--amber-dim); }
-  .field.wide { grid-column: 1 / -1; }
-
   /* Origin */
   .origin { display: grid; grid-template-columns: minmax(220px, 380px) 1fr; gap: 1.6rem 2.2rem; align-items: start; }
   .origin figure { margin: 0; }
@@ -218,6 +204,9 @@
   .about p + p { margin-top: .8rem; }
   .about strong { color: var(--cream); font-weight: 400; }
   .about em { color: var(--cream); font-style: italic; }
+  .subscribe-cta { text-align: center; padding: 1.4rem 0 .4rem; }
+  .subscribe-cta .big { font-size: 1.7rem; padding: .95rem 2.6rem .8rem; letter-spacing: .12em; text-decoration: none; }
+  .subscribe-cta p { font-size: .78rem; color: var(--cream-dim); margin-top: .8rem; }
   .credits { font-size: .64rem; letter-spacing: .08em; color: var(--faint); line-height: 1.9; }
   .credits a { color: var(--cream-dim); text-decoration: none; border-bottom: 1px solid var(--edge); }
   .credits a:hover { color: var(--amber); }
@@ -313,13 +302,13 @@
 </section>
 
 <section aria-labelledby="lbl-canyon">
-  <div class="label"><h2 id="lbl-canyon"><span class="num">01</span>Choose a canyon</h2><span class="sub">real elevation, rim to rim <button class="qbtn" id="methodBtn" type="button" aria-label="How the topography was measured" title="How the topography was measured">?</button></span></div>
+  <div class="label"><h2 id="lbl-canyon"><span class="num">01</span>Choose the canyon</h2><span class="sub">real elevation and topography <button class="qbtn" id="methodBtn" type="button" aria-label="How the topography was measured" title="How the topography was measured">?</button></span></div>
   <div class="canyon-grid" id="canyonGrid" role="group" aria-label="Canyons"></div>
   <div class="info-panel" id="infoPanel" hidden aria-live="polite"></div>
 </section>
 
 <section aria-labelledby="lbl-voices">
-  <div class="label"><h2 id="lbl-voices"><span class="num">02</span>Voices</h2><span class="sub" id="voiceHint"></span></div>
+  <div class="label"><h2 id="lbl-voices"><span class="num">02</span>Voices</h2><span class="sub">select your voices for the loop</span></div>
   <div class="pads" id="pads" role="group" aria-label="Voices"></div>
   <div class="voice-panel" id="voicePanel" hidden>
     <div class="vp-head">
@@ -335,7 +324,7 @@
 </section>
 
 <section aria-labelledby="lbl-play">
-  <div class="label"><h2 id="lbl-play"><span class="num">03</span>Pass the needle</h2><span class="sub">name it, sign it, send it on</span></div>
+  <div class="label"><h2 id="lbl-play"><span class="num">03</span>Share</h2><span class="sub">capture what you created</span></div>
   <div class="pass">
     <div class="step"><label for="cutName"><span class="n">1</span>Name your cut</label><input id="cutName" maxlength="40" placeholder="Dusk over the South Rim" autocomplete="off"></div>
     <div class="step"><label for="byName"><span class="n">2</span>Sign it</label><input id="byName" maxlength="24" placeholder="Your first name" autocomplete="given-name"></div>
@@ -377,24 +366,6 @@
   </div>
 </section>
 
-<details id="customDetails">
-  <summary><span><span class="num" style="font-family:var(--mono);font-size:.8rem;letter-spacing:.2em;margin-right:.7rem">04</span><span style="font-family:var(--display);font-size:1.5rem;letter-spacing:.08em;color:var(--cream);text-transform:none">Cut your own groove</span></span></summary>
-  <div class="custom">
-    <p>Two points on earth, any terrain between them. Fetched live.</p>
-    <div class="fields">
-      <div class="field"><label for="latA">Start latitude</label><input id="latA" inputmode="decimal" placeholder="36.057"></div>
-      <div class="field"><label for="lonA">Start longitude</label><input id="lonA" inputmode="decimal" placeholder="-112.143"></div>
-      <div class="field"><label for="latB">End latitude</label><input id="latB" inputmode="decimal" placeholder="36.200"></div>
-      <div class="field"><label for="lonB">End longitude</label><input id="lonB" inputmode="decimal" placeholder="-112.050"></div>
-      <div class="field wide"><label for="cName">Name it</label><input id="cName" maxlength="48" placeholder="Somewhere I have stood"></div>
-    </div>
-    <div class="transport">
-      <button class="btn btn-primary" id="btnCut" type="button">Fetch terrain</button>
-      <span class="status" id="cutStatus" style="margin:0"></span>
-    </div>
-  </div>
-</details>
-
 <section class="origin" aria-label="Where this came from">
   <figure>
     <img src="groove.jpg" width="901" height="895" loading="lazy" alt="Electron-microscope photograph of a stylus resting in a record groove. Labels point to the needle and to the waves of the left and right channels cut into the groove walls.">
@@ -405,6 +376,11 @@
     <p><strong>How it plays.</strong> Each canyon is a real elevation transect, rim to rim, 100 samples. The floor elevation picks the key. The canyon’s symmetry picks the mood: balanced walls play bright, lopsided ones play dark. Every voice has its own stylus crossing the profile at its own speed, and the speeds never divide evenly, so the voices drift in and out of phase the way Brian Eno’s tape loops did. Notes ring when a stylus crosses a contour line, so steep walls chime and flat floors fall silent. Echo scales with depth. Deeper canyon, longer tail.</p>
     <p><strong>Make it yours.</strong> Every voice has a handful of instruments and its own level, attack, decay, tone, grit, echo, and delay. The URL carries all of it, plus the canyon, key, mood, and seed. Copy the link and someone else hears the same cut. Export two minutes and you get an MP3.</p>
   </div>
+</section>
+
+<section class="subscribe-cta" aria-label="Subscribe to The Catalog">
+  <a class="btn btn-primary big" href="https://buttondown.com/catalog?utm_source=cumberlandcoast.com&amp;utm_medium=referral&amp;utm_campaign=canyon-groove" target="_blank" rel="noopener">Subscribe to The Catalog</a>
+  <p>Ideas, tools, and the people building tomorrow’s experiences. Weekly, from Jonathan Corley.</p>
 </section>
 
 <p class="credits">Elevation data: <a href="https://open-meteo.com/en/docs/elevation-api" rel="noopener">Open-Meteo Elevation API</a> (Copernicus DEM GLO-90), with one transect from <a href="https://open-elevation.com" rel="noopener">Open-Elevation</a> (SRTM). Sampled September 2026. Sound: Web Audio API, no samples, everything synthesized in the browser. MP3 encoding by <a href="https://github.com/zhuker/lamejs" rel="noopener">lamejs</a>. Source on <a id="repoLink" href="https://github.com/agentcorley/canyon-groove" rel="noopener">GitHub</a>.</p>
@@ -614,7 +590,7 @@ function defaultVoice(key) {
 }
 const state = {
   canyon: null, T: null, layers: new Set(DEFAULT_LAYERS), voice: {},
-  keyOverride: null, moodOverride: null, seed: 0, custom: null, pendingCustom: false, tuning: null,
+  keyOverride: null, moodOverride: null, seed: 0, tuning: null,
   cut: { name: '', by: '', gen: 0 },
 };
 const cleanName = (v, n) => String(v || '').replace(/[,<>&"]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, n);
@@ -631,11 +607,11 @@ function snapToScale(midi, sc) {
 }
 
 /* ------------------------------------------------------------------ hash */
-function findCanyon(id) { if (id === 'custom' && state.custom) return state.custom; return CANYONS.find(c => c.id === id) || null; }
+function findCanyon(id) { return CANYONS.find(c => c.id === id) || null; }
 function parseHash() {
   const raw = decodeURIComponent(location.hash.slice(1));
   const toks = raw.split(',').map(s => s.trim()).filter(Boolean);
-  const out = { canyonId: null, layers: [], inst: {}, params: {}, key: null, mood: null, seed: null, at: null, name: null, today: false, cut: '', by: '', gen: 0 };
+  const out = { canyonId: null, layers: [], inst: {}, params: {}, key: null, mood: null, seed: null, today: false, cut: '', by: '', gen: 0 };
   for (const t of toks) {
     const eq = t.indexOf('=');
     if (eq > 0) {
@@ -645,8 +621,6 @@ function parseHash() {
       else if (k === 'key' || k === 'root') { const i = NOTE_NAMES.indexOf(v.toUpperCase().replace('S', '#')); if (i >= 0) out.key = i; }
       else if (k === 'mode' || k === 'mood') { const m = MOOD_ALIAS[v.toLowerCase()]; if (m) out.mood = m; }
       else if (k === 'seed' && /^\d+$/.test(v)) out.seed = parseInt(v, 10) >>> 0;
-      else if (k === 'at') { const p = v.split('/').map(Number); if (p.length === 4 && p.every(Number.isFinite)) out.at = p; }
-      else if (k === 'n') out.name = v.slice(0, 48);
       else if (k === 'cut') out.cut = cleanName(v, 40);
       else if (k === 'by') out.by = cleanName(v, 24);
       else if (k === 'gen' && /^\d+$/.test(v)) out.gen = Math.min(9999, parseInt(v, 10));
@@ -656,7 +630,7 @@ function parseHash() {
     if (colon > 0) { const vk = t.slice(0, colon).toLowerCase(), ik = t.slice(colon + 1).toLowerCase(); if (LAYERS[vk]) { out.layers.push(vk); if (INSTRUMENTS[vk][ik]) out.inst[vk] = ik; } continue; }
     if (t === 'today') { out.today = true; continue; }
     if (LAYERS[t]) out.layers.push(t);
-    else if (!out.canyonId && (findCanyon(t) || t === 'custom')) out.canyonId = t;
+    else if (!out.canyonId && findCanyon(t)) out.canyonId = t;
   }
   if (out.today) { const d = dayIndex(); if (!out.canyonId) out.canyonId = CANYONS[d % CANYONS.length].id; if (out.seed == null) out.seed = (d * 7919 + 17) >>> 0; }
   return out;
@@ -671,15 +645,10 @@ function hashString() {
   if (state.cut.name) parts.push('cut=' + state.cut.name);
   if (state.cut.by) parts.push('by=' + state.cut.by);
   if (state.cut.gen) parts.push('gen=' + state.cut.gen);
-  if (state.canyon.id === 'custom') {
-    parts.push('at=' + [state.canyon.a[0], state.canyon.a[1], state.canyon.b[0], state.canyon.b[1]].map(v => +v.toFixed(4)).join('/'));
-    if (state.canyon.name) parts.push('n=' + state.canyon.name.replace(/,/g, ' '));
-  }
   return '#' + parts.join(',');
 }
 function shareHref() { return CCLab.shareBase() + location.hash; }
 function writeHash() {
-  if (state.pendingCustom) return;
   const h = hashString();
   if (location.hash !== h) { try { history.replaceState(null, '', h); } catch (e) { /* ignore */ } }
   $('shareUrl').value = shareHref();
@@ -1182,37 +1151,6 @@ async function copyLink(quiet) {
   catch (e) { const i = $('shareUrl'); i.focus(); i.select(); if (!quiet) setStatus('Select the link and copy it.'); return false; }
 }
 
-/* ------------------------------------------------------------------ custom */
-async function fetchTransect(a, b, name) {
-  const N = 100, lats = [], lons = [];
-  for (let i = 0; i < N; i++) { const f = i / (N - 1); lats.push((a[0] + (b[0] - a[0]) * f).toFixed(5)); lons.push((a[1] + (b[1] - a[1]) * f).toFixed(5)); }
-  const r = await fetch('https://api.open-meteo.com/v1/elevation?latitude=' + lats.join(',') + '&longitude=' + lons.join(','));
-  if (!r.ok) throw new Error('Elevation service replied ' + r.status);
-  const j = await r.json();
-  if (!j.elevation || j.elevation.length !== N) throw new Error('Unexpected reply from elevation service');
-  const R = 6371, dlat = (b[0] - a[0]) * Math.PI / 180, dlon = (b[1] - a[1]) * Math.PI / 180, m = (a[0] + b[0]) / 2 * Math.PI / 180;
-  const km = R * Math.sqrt(dlat * dlat + Math.pow(dlon * Math.cos(m), 2));
-  return { id: 'custom', name: name || 'Custom cut', place: a[0].toFixed(3) + ', ' + a[1].toFixed(3) + ' to ' + b[0].toFixed(3) + ', ' + b[1].toFixed(3), ends: ['Start', 'End'], a, b, km: +km.toFixed(2), src: 'open-meteo',
-    note: 'Your own transect, 100 samples along the straight line between the two points.', about: 'A custom line fetched live from the Copernicus DEM through Open-Meteo. Same method as the sixteen canyons, same 90-metre grid.', source: { label: 'Open-Meteo Elevation API', url: 'https://open-meteo.com/en/docs/elevation-api' }, elev: j.elevation.map(v => Math.round(v)) };
-}
-async function cutCustom(a, b, name, fromHash) {
-  const st = $('cutStatus'); st.innerHTML = 'Fetching terrain…'; $('btnCut').disabled = true; state.pendingCustom = true;
-  try {
-    const c = await fetchTransect(a, b, name);
-    if (Math.max(...c.elev) - Math.min(...c.elev) < 5) throw new Error('That line is flat. Under 5 m of relief. Pick two points with some terrain between them.');
-    state.custom = c; state.pendingCustom = false;
-    ui.canyonGrid(); selectCanyon(c);
-    st.innerHTML = '<span class="ok">Loaded.</span> ' + fmtM(Math.max(...c.elev) - Math.min(...c.elev)) + ' of relief over ' + c.km.toFixed(1) + ' km.';
-    if (!fromHash) { $('customDetails').open = false; window.scrollTo({ top: 0, behavior: 'smooth' }); }
-  } catch (e) {
-    state.pendingCustom = false;
-    st.innerHTML = '<span class="warn">' + esc(e.message || 'Could not fetch terrain.') + '</span>';
-    if (fromHash) { $('customDetails').open = true; $('latA').value = a[0]; $('lonA').value = a[1]; $('latB').value = b[0]; $('lonB').value = b[1]; $('cName').value = name || ''; setStatus('<span class="warn">The custom transect in this link could not be fetched.</span> Its coordinates are filled in below so you can retry.'); }
-    writeHash();
-  }
-  $('btnCut').disabled = false;
-}
-
 /* --------------------------------------------------------------- selection */
 function selectCanyon(c) { state.canyon = c; state.T = analyze(c); ui.canyon(); writeHash(); restartIfPlaying(); }
 function toggleLayer(key) {
@@ -1269,8 +1207,7 @@ function methodDialog(trigger) {
 const ui = {
   canyonGrid() {
     const grid = $('canyonGrid'); grid.textContent = '';
-    const list = state.custom ? [...CANYONS, state.custom] : CANYONS;
-    for (const c of list) {
+    for (const c of CANYONS) {
       const relief = Math.max(...c.elev) - Math.min(...c.elev);
       const d = document.createElement('div'); d.className = 'canyon'; d.dataset.id = c.id;
       d.innerHTML = '<button type="button" class="canyon-main" aria-pressed="false"><span class="name">' + esc(c.name) + '</span><span class="place">' + esc(c.place) + '</span><span class="relief">' + fmtM(relief) + ' relief · ' + c.km.toFixed(0) + ' km</span></button>'
@@ -1320,8 +1257,6 @@ const ui = {
       }
     }
     el.querySelectorAll('.pad').forEach(d => { const k = d.dataset.key, on = state.layers.has(k); d.classList.toggle('on', on); d.classList.toggle('tuning', state.tuning === k); d.querySelector('.pad-main').setAttribute('aria-pressed', String(on)); d.querySelector('.pad-tune').setAttribute('aria-expanded', String(state.tuning === k)); d.querySelector('.pad-inst').textContent = INSTRUMENTS[k][state.voice[k].inst]; });
-    const on = ORDER.filter(k => state.layers.has(k));
-    $('voiceHint').textContent = on.length === 0 ? 'no voices on' : on.length === 1 ? LAYERS[on[0]].label.toLowerCase() + ' alone' : on.length + ' voices, each on its own loop';
   },
   tune(key) { state.tuning = key; ui.pads(); ui.voicePanel(); if (key) requestAnimationFrame(() => CCLab.reveal($('voicePanel'))); },
   voicePanel() {
@@ -1444,9 +1379,8 @@ function applyHash(initial) {
   }
   if (h.seed != null) state.seed = h.seed; else if (initial || !state.seed) state.seed = (Math.random() * 1e9) >>> 0;
   state.cut = { name: h.cut, by: h.by, gen: h.gen };
-  if (h.at) cutCustom([h.at[0], h.at[1]], [h.at[2], h.at[3]], h.name, true);
-  const c = (h.canyonId && findCanyon(h.canyonId)) || (h.at ? null : (initial ? CANYONS[Math.floor(Math.random() * CANYONS.length)] : CANYONS[0]));
-  if (c) { state.canyon = c; state.T = analyze(c); } else if (!state.canyon) { state.canyon = CANYONS[0]; state.T = analyze(CANYONS[0]); }
+  const c = (h.canyonId && findCanyon(h.canyonId)) || (initial ? CANYONS[Math.floor(Math.random() * CANYONS.length)] : state.canyon || CANYONS[0]);
+  state.canyon = c; state.T = analyze(c);
 }
 function voiceSig() { return ORDER.map(k => k + ':' + state.voice[k].inst).join(','); }
 function boot() {
@@ -1481,11 +1415,6 @@ function boot() {
     $('mCutName').value = name; $('mCutUrl').value = shareHref(); $('mCanyon').value = state.canyon.name;
     copyLink(true);
     setStatus('<span class="ok">Saved “' + esc(name) + '”.</span> Link copied. Confirm the email from The Catalog when it lands.');
-  });
-  $('btnCut').addEventListener('click', () => {
-    const v = id => parseFloat($(id).value); const a = [v('latA'), v('lonA')], b = [v('latB'), v('lonB')];
-    if (![...a, ...b].every(Number.isFinite) || Math.abs(a[0]) > 90 || Math.abs(b[0]) > 90 || Math.abs(a[1]) > 180 || Math.abs(b[1]) > 180) { $('cutStatus').innerHTML = '<span class="warn">Four numbers, please. Latitude then longitude, decimal degrees.</span>'; return; }
-    cutCustom(a, b, $('cName').value.trim(), false);
   });
   window.addEventListener('hashchange', () => {
     const prev = [state.canyon.id, state.keyOverride, state.moodOverride, state.seed].join('|'), prevVoices = voiceSig();
