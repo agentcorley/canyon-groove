@@ -18,8 +18,8 @@ module.exports = async function handler(req, res) {
   const clean = (v, n) => String(v || '').replace(/[\r\n<>]/g, ' ').trim().slice(0, n);
   const metadata = {
     source: 'canyon-groove',
-    'cut-name': clean(body.cut, 60),
-    'cut-url': clean(body.url, 400),
+    'song-name': clean(body.cut, 60),
+    'song-url': clean(body.url, 400),
     canyon: clean(body.canyon, 60),
     'saved-at': new Date().toISOString(),
   };
@@ -31,11 +31,18 @@ module.exports = async function handler(req, res) {
     const j = await r.json().catch(() => ({}));
     const msg = JSON.stringify(j).toLowerCase();
     if (r.status === 400 && (msg.includes('already') || msg.includes('exists') || msg.includes('subscribed'))) {
-      // Existing subscriber: attach the cut to their record instead.
+      // Existing subscriber: attach the song to their record instead.
       const p = await fetch(BD + '/' + encodeURIComponent(email), { method: 'PATCH', headers, body: JSON.stringify({ metadata }) });
       res.status(200).json({ ok: true, state: p.ok ? 'existing' : 'existing-nometa' }); return;
     }
-    res.status(502).json({ ok: false, error: (j && (j.detail || j.error)) || 'Buttondown declined the request.' });
+    // Buttondown's own wording is written for the newsletter owner, not the visitor.
+    if (msg.includes('firewall') || msg.includes('blocked') || msg.includes('spam')) {
+      res.status(400).json({ ok: false, error: 'That address was not accepted. Try another one.' }); return;
+    }
+    if (msg.includes('invalid') || msg.includes('valid email')) {
+      res.status(400).json({ ok: false, error: 'That email does not look right.' }); return;
+    }
+    res.status(502).json({ ok: false, error: 'Could not save just now. Try again in a moment.' });
   } catch (e) {
     res.status(502).json({ ok: false, error: 'Could not reach Buttondown.' });
   }
