@@ -53,7 +53,7 @@ Every voice has seven settings, 0 to 100, under its **tune** tab: **Level**, **A
 | `mood=dusk` | Override the mood: `bright`, `open`, `warm`, `dusk`, `dark`, `simple`. |
 | `seed=48213` | Random seed. Same seed, same cut. |
 | `today` | Today’s cut: the canyon and seed change once a day, worldwide. |
-| `cut=Dusk%20over%20the%20South%20Rim` | The cut’s name, given in Pass the needle. |
+| `song=Dusk%20over%20the%20South%20Rim` | The song’s name, given in Share. Older links using `cut=` still work. |
 | `by=Kristen` | Who passed it. Shows a “Passed to you” banner to the next listener. |
 | `gen=2` | Pressing number in the chain. Each pass adds one. |
 

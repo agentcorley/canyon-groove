@@ -267,7 +267,7 @@
 <header>
   <div>
     <h1>Canyon<br>Groove</h1>
-    <p class="tagline">Every canyon is a groove. Drop the needle. <a href="#today" id="todayLink">Today’s cut</a></p>
+    <p class="tagline">Every canyon has a unique sound</p>
   </div>
   <div class="disc-wrap">
     <canvas id="disc" width="256" height="256" aria-hidden="true"></canvas>
@@ -299,12 +299,12 @@
     <div>Loops <b id="rLoops"></b></div>
     <div>Echo <b id="rEcho"></b></div>
     <div>Source <b id="rSource"></b></div>
-    <div>Cut <b><button class="link" id="btnRecut" type="button" title="Same canyon, a new seed">Re-cut this canyon</button></b></div>
+    <div>Variation <b><button class="link" id="btnRecut" type="button" title="Same canyon, a new variation">Make a new one</button></b></div>
   </div>
 </section>
 
 <section aria-labelledby="lbl-canyon">
-  <div class="label"><h2 id="lbl-canyon"><span class="num">01</span>Choose the canyon</h2><span class="sub">real elevation and topography <button class="qbtn" id="methodBtn" type="button" aria-label="How the topography was measured" title="How the topography was measured">?</button></span></div>
+  <div class="label"><h2 id="lbl-canyon"><span class="num">01</span>Choose a canyon</h2><span class="sub">real elevation and topography <button class="qbtn" id="methodBtn" type="button" aria-label="How the topography was measured" title="How the topography was measured">?</button></span></div>
   <div class="canyon-grid" id="canyonGrid" role="group" aria-label="Canyons"></div>
   <div class="info-panel" id="infoPanel" hidden aria-live="polite"></div>
 </section>
@@ -328,7 +328,7 @@
 <section aria-labelledby="lbl-play">
   <div class="label"><h2 id="lbl-play"><span class="num">03</span>Share</h2><span class="sub">capture what you created</span></div>
   <div class="share-row">
-    <input id="cutName" maxlength="40" placeholder="Name your cut" autocomplete="off" aria-label="Name your cut">
+    <input id="cutName" maxlength="40" placeholder="Name your song" autocomplete="off" aria-label="Name your song">
     <input id="byName" maxlength="24" placeholder="Your name" autocomplete="name" aria-label="Your name">
     <button class="btn btn-primary" id="btnPass" type="button">Share</button>
   </div>
@@ -337,7 +337,7 @@
   <div class="progress" id="progress"><i></i></div>
   <div class="share-more">
     <button class="link" id="btnCopy" type="button">Copy link</button>
-    <button class="link" id="btnExport" type="button" title="Two minutes of this cut, rendered as an MP3">Download MP3</button>
+    <button class="link" id="btnExport" type="button" title="Two minutes of this song, rendered as an MP3">Download MP3</button>
     <button class="link" id="btnCard" type="button">Save card</button>
   </div>
 
@@ -348,7 +348,7 @@
     <input type="hidden" name="metadata__cut-name" id="mCutName" value="">
     <input type="hidden" name="metadata__cut-url" id="mCutUrl" value="">
     <input type="hidden" name="metadata__canyon" id="mCanyon" value="">
-    <div class="keep-text"><b>Keep this cut.</b> Saved under your name with <em>The Catalog</em>, my weekly newsletter.</div>
+    <div class="keep-text"><b>Keep this song.</b> Saved under your name with <em>The Catalog</em>, my weekly newsletter.</div>
     <input type="email" name="email" placeholder="you@example.com" required autocomplete="email" aria-label="Email">
     <button class="btn btn-secondary" type="submit">Save</button>
   </form>
@@ -362,7 +362,7 @@
   <div class="about">
     <p><strong>Where this came from.</strong> When I saw this photograph, where the magnified microscopic record player needle sits between the vinyl record’s tracks I thought the groove walls looked like canyon walls. They look ridged and layered, and the shape of those walls is the music. I wondered whether it works the other way round. Could you take a real canyon, treat the cross-section as a groove, and use AI to drag a needle through the canyon grooves?</p>
     <p><strong>How it plays.</strong> Each canyon is a real elevation transect, rim to rim, 100 samples. The floor elevation picks the key. The canyon’s symmetry picks the mood: balanced walls play bright, lopsided ones play dark. Every voice has its own stylus crossing the profile at its own speed, and the speeds never divide evenly, so the voices drift in and out of phase the way Brian Eno’s tape loops did. Notes ring when a stylus crosses a contour line, so steep walls chime and flat floors fall silent. Echo scales with depth. Deeper canyon, longer tail.</p>
-    <p><strong>Make it yours.</strong> Every voice has a handful of instruments and its own level, attack, decay, tone, grit, echo, and delay. The URL carries all of it, plus the canyon, key, mood, and seed. Copy the link and someone else hears the same cut. Export two minutes and you get an MP3.</p>
+    <p><strong>Make it yours.</strong> Every voice has a handful of instruments and its own level, attack, decay, tone, grit, echo, and delay. The URL carries all of it, plus the canyon, key, mood, and seed. Copy the link and someone else hears the same song. Export two minutes and you get an MP3.</p>
   </div>
 </section>
 
@@ -609,7 +609,7 @@ function parseHash() {
       else if (k === 'key' || k === 'root') { const i = NOTE_NAMES.indexOf(v.toUpperCase().replace('S', '#')); if (i >= 0) out.key = i; }
       else if (k === 'mode' || k === 'mood') { const m = MOOD_ALIAS[v.toLowerCase()]; if (m) out.mood = m; }
       else if (k === 'seed' && /^\d+$/.test(v)) out.seed = parseInt(v, 10) >>> 0;
-      else if (k === 'cut') out.cut = cleanName(v, 40);
+      else if (k === 'song' || k === 'cut') out.cut = cleanName(v, 40);
       else if (k === 'by') out.by = cleanName(v, 24);
       else if (k === 'gen' && /^\d+$/.test(v)) out.gen = Math.min(9999, parseInt(v, 10));
       continue;
@@ -630,7 +630,7 @@ function hashString() {
   if (state.keyOverride != null) parts.push('key=' + NOTE_NAMES[state.keyOverride].replace('#', 's'));
   if (state.moodOverride) parts.push('mood=' + state.moodOverride);
   parts.push('seed=' + state.seed);
-  if (state.cut.name) parts.push('cut=' + encodeURIComponent(state.cut.name));
+  if (state.cut.name) parts.push('song=' + encodeURIComponent(state.cut.name));
   if (state.cut.by) parts.push('by=' + encodeURIComponent(state.cut.by));
   if (state.cut.gen) parts.push('gen=' + state.cut.gen);
   return '#' + parts.join(',');
@@ -965,7 +965,7 @@ function stop(quiet) {
   clearInterval(audio.timer); audio.timer = null;
   audio.playing = false;
   ui.playing(false);
-  if (!quiet) setStatus('Paused. Press play to start the cut again, or export it.');
+  if (!quiet) setStatus('Paused. Press play to start the song again, or export it.');
 }
 function restartIfPlaying() { if (audio.playing) { stop(true); setTimeout(play, 60); } }
 function liveStart(k) { if (audio.playing) audio.eng.startVoice(k); }
@@ -1086,7 +1086,7 @@ async function renderCard() {
   ctx.fillStyle = '#e8e0cc'; ctx.font = '64px "Bebas Neue", Impact, sans-serif';
   const name = state.canyon.name.toUpperCase(); ctx.fillText(name.length > 26 ? name.slice(0, 25) + '…' : name, padX, 380);
   ctx.fillStyle = '#7d7566'; ctx.font = '26px "Courier Prime", monospace';
-  const cutLine = state.cut.name ? '“' + state.cut.name.toUpperCase() + '”' + (state.cut.by ? '  ·  CUT BY ' + state.cut.by.toUpperCase() : '') : state.canyon.place.toUpperCase() + '  ·  ' + fmtM(T.relief).toUpperCase() + ' RELIEF  ·  ' + state.canyon.km.toFixed(0) + ' KM';
+  const cutLine = state.cut.name ? '“' + state.cut.name.toUpperCase() + '”' + (state.cut.by ? '  ·  BY ' + state.cut.by.toUpperCase() : '') : state.canyon.place.toUpperCase() + '  ·  ' + fmtM(T.relief).toUpperCase() + ' RELIEF  ·  ' + state.canyon.km.toFixed(0) + ' KM';
   ctx.fillText(cutLine.length > 44 ? cutLine.slice(0, 43) + '…' : cutLine, padX, 460);
   ctx.textAlign = 'right'; ctx.fillStyle = '#4a463d'; ctx.font = '24px "Courier Prime", monospace';
   ctx.fillText('PRESSING NO. ' + pressingNo() + (state.cut.gen ? '  ·  ' + ordinal(state.cut.gen).toUpperCase() + ' PASS' : ''), W - padX, 80); ctx.textAlign = 'left';
@@ -1105,13 +1105,13 @@ async function renderCard() {
 function ordinal(n) { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
 function pressingNo() { return String(state.seed % 10000).padStart(4, '0'); }
 async function passNeedle() {
-  const name = cleanName($('cutName').value, 40) || (state.canyon.name + ' cut');
+  const name = cleanName($('cutName').value, 40) || (state.canyon.name + ' song');
   const by = cleanName($('byName').value, 24);
   if (!by) { $('byName').focus(); setStatus('<span class="warn">Add your name first.</span>'); return; }
   state.cut = { name, by, gen: (state.cut.gen || 0) + 1 };
   writeHash(); ui.cutInfo();
   const url = shareHref();
-  const text = state.canyon.name + ', played as a record. Cut by ' + by + '. Press play, then pass it on.';
+  const text = 'A generative song from ' + state.canyon.name + ', by ' + by + '. Press play, then pass it on.';
   let cardFile = null;
   try { cardFile = await renderCard(); } catch (e) {}
   if (navigator.share) {
@@ -1135,7 +1135,7 @@ async function share() {
 }
 async function copyLink(quiet) {
   const url = shareHref();
-  try { await navigator.clipboard.writeText(url); if (!quiet) setStatus('<span class="ok">Link copied.</span> Anyone who opens it hears this cut.'); return true; }
+  try { await navigator.clipboard.writeText(url); if (!quiet) setStatus('<span class="ok">Link copied.</span> Anyone who opens it hears this song.'); return true; }
   catch (e) { if (!quiet) setStatus('Copy this from the address bar: ' + esc(url)); return false; }
 }
 
@@ -1273,12 +1273,12 @@ const ui = {
   },
   cutInfo() {
     const ct = $('cutTitle'), pb = $('passedBanner'), cut = state.cut;
-    ct.hidden = !cut.name; if (cut.name) ct.innerHTML = '“' + esc(cut.name) + '” ' + (cut.by ? '<span>cut by ' + esc(cut.by) + '</span>' : '');
+    ct.hidden = !cut.name; if (cut.name) ct.innerHTML = '“' + esc(cut.name) + '” ' + (cut.by ? '<span>by ' + esc(cut.by) + '</span>' : '');
     pb.hidden = !cut.by;
-    if (cut.by) pb.innerHTML = '<span class="tag">Passed to you</span><span><b>' + esc(cut.by) + '</b> sent you this cut' + (cut.gen ? ', pressing ' + ordinal(cut.gen) : '') + '. Press play, then re-cut it and pass it on.</span>';
+    if (cut.by) pb.innerHTML = '<span class="tag">Passed to you</span><span><b>' + esc(cut.by) + '</b> sent you this song' + (cut.gen ? ', pressing ' + ordinal(cut.gen) : '') + '. Press play, then make it your own and pass it on.</span>';
     if ($('cutName').value !== cut.name) $('cutName').value = cut.name;
     $('passHint').innerHTML = cut.by
-      ? '<b>' + esc(cut.by) + '</b>’s cut. Rename it if you like, add your name, and share it on.'
+      ? '<b>' + esc(cut.by) + '</b>’s song. Rename it if you like, add your name, and share it on.'
       : 'Your link and a card, with your name on it.';
   },
   hint() {
@@ -1400,7 +1400,7 @@ function boot() {
   $('vpClose').addEventListener('click', () => ui.tune(null));
   $('vpReset').addEventListener('click', () => { const k = state.tuning; if (!k) return; const was = state.voice[k].inst; state.voice[k] = defaultVoice(k); liveUpdate(k); if (was !== state.voice[k].inst) liveRestart(k); ui.pads(); ui.voicePanel(); writeHash(); });
   $('saveForm').addEventListener('submit', async e => {
-    const form = e.currentTarget, name = cleanName($('cutName').value, 40) || 'Untitled cut';
+    const form = e.currentTarget, name = cleanName($('cutName').value, 40) || 'Untitled song';
     $('mCutName').value = name; $('mCutUrl').value = shareHref(); $('mCanyon').value = state.canyon.name;
     if (form.dataset.fallback === '1') return;            // second pass: let the plain post go through
     e.preventDefault();
