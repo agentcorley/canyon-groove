@@ -64,9 +64,20 @@
   function autoHeight() {
     if (window.self === window.top) return;
     let last = 0;
-    const send = () => { const h = Math.ceil(document.documentElement.scrollHeight); if (h !== last) { last = h; postToParent({ type: 'cg-height', h }); } };
-    new ResizeObserver(send).observe(document.documentElement);
+    /* Measure the body, not the document: the document is never shorter than the
+       frame's own viewport, and the host sizes the frame from this number, so
+       measuring the document would grow the frame forever. */
+    const send = () => { const cs = getComputedStyle(document.body); const h = Math.ceil(document.body.getBoundingClientRect().height + (parseFloat(cs.marginTop) || 0) + (parseFloat(cs.marginBottom) || 0)); if (h > 0 && Math.abs(h - last) > 1) { last = h; postToParent({ type: 'cg-height', h }); } };
+    new ResizeObserver(send).observe(document.body);
     window.addEventListener('load', send); setInterval(send, 1500); send();
+  }
+  /* Bring an element into view. Inside a frame the app cannot scroll the host page,
+     so it sends the element's position and lets the host decide. */
+  function reveal(el, margin) {
+    if (!el) return;
+    if (window.self === window.top) { el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+    const r = el.getBoundingClientRect();
+    postToParent({ type: 'cg-scroll', top: r.top + window.scrollY, height: r.height, margin: margin || 24 });
   }
   function syncHash() {
     if (window.self === window.top) return;
@@ -75,5 +86,5 @@
     history.replaceState = function (s, t, u) { orig(s, t, u); postToParent({ type: 'cg-hash', hash: location.hash }); };
   }
 
-  window.CCLab = { subscribeForm, footer, isEmbedded, canonical, shareBase, autoHeight, syncHash, esc, BUTTONDOWN, SITE };
+  window.CCLab = { subscribeForm, footer, isEmbedded, canonical, shareBase, autoHeight, syncHash, reveal, esc, BUTTONDOWN, SITE };
 })();

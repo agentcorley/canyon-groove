@@ -53,6 +53,9 @@ Every voice has seven settings, 0 to 100, under its **tune** tab: **Level**, **A
 | `mood=dusk` | Override the mood: `bright`, `open`, `warm`, `dusk`, `dark`, `simple`. |
 | `seed=48213` | Random seed. Same seed, same cut. |
 | `today` | Today’s cut: the canyon and seed change once a day, worldwide. |
+| `cut=Dusk%20over%20the%20South%20Rim` | The cut’s name, given in Pass the needle. |
+| `by=Kristen` | Who passed it. Shows a “Passed to you” banner to the next listener. |
+| `gen=2` | Pressing number in the chain. Each pass adds one. |
 | `at=36.057/-112.143/36.2/-112.05` | A custom transect, start lat/lon then end lat/lon, fetched live. |
 | `n=Bright%20Angel` | Name for a custom transect. |
 
@@ -60,15 +63,16 @@ The app rewrites the hash with `history.replaceState` on every change, so the ad
 
 ## Sharing and capture
 
-- **Share** uses the Web Share API on phones and copies the link elsewhere.
-- **Share card** renders a 1080 by 1350 PNG of the cut (profile, key, mood, voices, link) and hands it to the share sheet, or downloads it.
+- **Pass the needle** is the main share loop. Name your cut, sign it, and press the button. On a phone the share sheet opens with the card image and a link that carries `cut`, `by`, and `gen`; on desktop the link is copied and the card downloads. Whoever opens the link sees who passed it, hears the exact cut, and gets the same three steps. Every pass adds a pressing.
+- **Share link** uses the Web Share API on phones and copies the link elsewhere.
+- **Share card** renders a 1080 by 1350 PNG of the cut (profile, cut name, who cut it, pressing number, key, mood, voices, link) and hands it to the share sheet, or downloads it.
 - **Export MP3** renders two minutes offline with the same engine and encodes a 192 kbps MP3 in the browser with [lamejs](https://github.com/zhuker/lamejs). Falls back to WAV if the encoder cannot load. Takes a few seconds.
 - **Save this cut** posts name and email to Buttondown as a subscriber to *The Catalog*, tagged `canyon-groove`, with the cut’s name, URL, and canyon stored as subscriber metadata. Buttondown handles confirmation. The link is copied to the clipboard on save.
 - The footer carries a plain **Subscribe** form to the same list, tagged `canyon-groove`, plus the site’s navigation and other links. Both hide in embed mode.
 
 ## The canyons
 
-Sixteen transects, 100 evenly spaced samples along a straight line, pulled September 16, 2026. Fifteen from the [Open-Meteo Elevation API](https://open-meteo.com/en/docs/elevation-api) (Copernicus DEM GLO-90, 90 m grid). Yarlung Tsangpo from [Open-Elevation](https://open-elevation.com) (SRTM). The dataset with coordinates, notes, and official sources is [`canyons.json`](canyons.json). The **?** on every canyon card opens a short note and the official link; the **?** beside “real elevation, rim to rim” explains the method and its limits.
+Sixteen transects, 100 evenly spaced samples along a straight line, pulled September 16, 2026. Fifteen from the [Open-Meteo Elevation API](https://open-meteo.com/en/docs/elevation-api) (Copernicus DEM GLO-90, 90 m grid). Yarlung Tsangpo from [Open-Elevation](https://open-elevation.com) (SRTM). The dataset with coordinates, notes, and official sources is [`canyons.json`](canyons.json). The **?** on every canyon card opens an inline panel with a short note, a Play button, and a **Learn more** link to the official source (new tab, tagged `utm_source=cumberlandcoast.com` so the destination sees the page as the referrer). The **?** beside “real elevation, rim to rim” explains the method and its limits. Panels are inline rather than modal so they behave inside an iframe.
 
 | id | Canyon | Relief on this line | Official source |
 |---|---|---|---|
@@ -117,7 +121,7 @@ The site is WordPress.com Atomic, so a Custom HTML block can hold an iframe and 
 2. Add a **Custom HTML** block and paste [`wordpress/embed.html`](wordpress/embed.html), replacing `APP_HOST` with the Vercel origin and `PAGE_URL` with the page’s own URL.
 3. Publish.
 
-What the snippet does: the iframe loads the app in embed mode (no footer, no duplicate subscribe box; the page supplies its own). The app posts its height so the frame never scrolls inside the page. Share links made inside the app point at the WordPress page, and the page’s URL follows the cut, so `cumberlandcoast.com/canyon-groove/#kali,bedrock:strings` opens straight into that cut.
+What the snippet does: the iframe loads the app in embed mode (no footer, no duplicate subscribe box, no docked play bar; the page supplies its own chrome). The app posts its height so the frame never scrolls inside the page, and asks the page to scroll when an inline panel opens below the fold. Share links made inside the app point at the WordPress page, and the page’s URL follows the cut, so `cumberlandcoast.com/canyon-groove/#kali,bedrock:strings` opens straight into that cut.
 
 ### GitHub Pages (fallback)
 
@@ -130,6 +134,7 @@ Settings, Pages, deploy from `main` root. Works the same way; only the origin ch
 | `index.html` | The app: markup, styles, data, engine |
 | `assets/site.js`, `assets/site.css` | Footer that mirrors cumberlandcoast.com, Buttondown subscribe form, embed helpers |
 | `wordpress/embed.html` | The Custom HTML block for the WordPress page |
+| `wordpress/preview.html` | Local stand-in for the WordPress page, to test the embed with a static server |
 | `canyons.json` | Elevation dataset with coordinates, notes, and official sources |
 | `groove.jpg` | The photograph that started it |
 | `og.png` | Social preview image |

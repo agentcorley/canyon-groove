@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap">
-<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/site.css?v=3">
 <style>
   :root {
     --bg: #0a0a08; --surface: #111110; --groove: #1a1a17; --edge: #2a2820;
@@ -219,17 +219,37 @@
   .credits a { color: var(--cream-dim); text-decoration: none; border-bottom: 1px solid var(--edge); }
   .credits a:hover { color: var(--amber); }
 
-  /* Dialog */
-  dialog { background: var(--surface); color: var(--cream); border: 1px solid var(--amber-dim); padding: 0; max-width: min(92vw, 560px); width: 100%; }
-  dialog::backdrop { background: rgba(10,10,8,.78); backdrop-filter: blur(2px); }
-  .dlg { padding: 1.3rem 1.4rem 1.4rem; font-size: .82rem; line-height: 1.65; }
-  .dlg h3 { font-family: var(--display); font-size: 1.8rem; letter-spacing: .08em; font-weight: 400; color: var(--amber); line-height: 1; margin-bottom: .2rem; }
-  .dlg .sub { font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--cream-dim); margin-bottom: .9rem; }
-  .dlg p { color: var(--cream-dim); margin-bottom: .8rem; }
-  .dlg p strong { color: var(--cream); font-weight: 400; }
-  .dlg .row { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1rem; align-items: center; }
-  .dlg .row a { font-size: .7rem; letter-spacing: .1em; }
-  .dlg .coords { font-size: .64rem; color: var(--faint); letter-spacing: .04em; margin-top: .6rem; }
+  /* Info panel (inline, never a modal: it has to behave inside an iframe) */
+  .info-panel { margin-top: .6rem; border: 1px solid var(--amber-dim); background: var(--surface); padding: 1rem 1.1rem 1.1rem; font-size: .82rem; line-height: 1.65; }
+  .info-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: .6rem; }
+  .info-head h3 { font-family: var(--display); font-size: 1.8rem; letter-spacing: .08em; font-weight: 400; color: var(--amber); line-height: 1; margin-bottom: .2rem; }
+  .info-head .sub { font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--cream-dim); }
+  .info-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .6rem 2rem; align-items: start; }
+  .info-body p { color: var(--cream-dim); margin-bottom: .7rem; max-width: 66ch; }
+  .info-body p strong { color: var(--cream); font-weight: 400; }
+  .info-actions { display: flex; flex-direction: column; gap: .5rem; align-items: stretch; min-width: 200px; }
+  .info-actions .btn { justify-content: center; font-size: 1rem; }
+  .info-actions .more { text-align: center; font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--cream); text-decoration: none; border: 1px solid var(--edge); padding: .55rem .8rem; }
+  .info-actions .more:hover { border-color: var(--amber); color: var(--amber); }
+  .info-foot { grid-column: 1 / -1; font-size: .64rem; color: var(--faint); letter-spacing: .04em; border-top: 1px dashed var(--edge); padding-top: .6rem; margin-top: .2rem; }
+  @media (max-width: 700px) { .info-body { grid-template-columns: 1fr; } .info-actions { min-width: 0; } }
+
+  /* Pass the needle */
+  .pass { display: grid; grid-template-columns: 1fr 1fr auto; gap: .8rem; align-items: end; }
+  .pass .step label { display: flex; align-items: center; gap: .5rem; font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--amber); margin-bottom: .35rem; }
+  .pass .n { width: 18px; height: 18px; border-radius: 50%; background: var(--amber); color: var(--bg); font-size: .62rem; font-weight: 700; display: inline-grid; place-items: center; letter-spacing: 0; }
+  .pass input { width: 100%; background: var(--groove); border: 1px solid var(--edge); color: var(--cream); font-family: inherit; font-size: .9rem; padding: .6rem .7rem; outline: none; }
+  .pass input:focus { border-color: var(--amber); }
+  .pass .btn { width: 100%; justify-content: center; padding-top: .75rem; padding-bottom: .62rem; }
+  .pass-hint { font-size: .78rem; color: var(--cream-dim); margin-top: .8rem; max-width: 72ch; line-height: 1.55; }
+  .pass-hint b { color: var(--cream); font-weight: 400; }
+  .passed { border: 1px solid var(--amber-dim); background: var(--amber-glow); padding: .6rem .9rem; font-size: .8rem; color: var(--cream); margin-top: .7rem; display: flex; gap: .6rem; align-items: baseline; flex-wrap: wrap; }
+  .passed .tag { font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--amber); }
+  .now-text .cut-title { font-family: var(--display); font-size: 1.35rem; letter-spacing: .06em; color: var(--amber); margin-top: .35rem; }
+  .now-text .cut-title span { color: var(--cream-dim); font-family: var(--mono); font-size: .72rem; letter-spacing: .1em; }
+  .more-ways { margin-top: 1.4rem; padding-top: 1rem; border-top: 1px dashed var(--edge); }
+  .more-ways .k { font-size: .62rem; letter-spacing: .22em; text-transform: uppercase; color: var(--faint); margin-bottom: .6rem; }
+  @media (max-width: 700px) { .pass { grid-template-columns: 1fr; } }
 
   @media (max-width: 700px) {
     header { flex-direction: column; align-items: flex-start; }
@@ -243,7 +263,9 @@
   }
   @media (prefers-reduced-motion: reduce) { .play.pulse::after { animation: none; } }
   @media (prefers-reduced-motion: reduce) { .btn-rec.on .dot { animation: none; } }
-  body.embed .crumb, body.embed #labFooter { display: none; }
+  body.embed { min-height: 0; }
+  body.embed .crumb, body.embed #labFooter, body.embed .dock { display: none; }
+  body.embed.docked .page { padding-bottom: 3rem; }
 </style>
 </head>
 <body>
@@ -267,7 +289,9 @@
       <div class="kicker" id="nowKicker">Ready to play</div>
       <h2 id="canyonName">&nbsp;</h2>
       <div class="where" id="canyonPlace"></div>
+      <div class="cut-title" id="cutTitle" hidden></div>
       <div class="hint" id="playHint"></div>
+      <div class="passed" id="passedBanner" hidden></div>
     </div>
   </div>
   <canvas id="groove" role="img" aria-label="Canyon cross-section drawn as a record groove, with a stylus for each voice"></canvas>
@@ -288,6 +312,7 @@
 <section aria-labelledby="lbl-canyon">
   <div class="label"><h2 id="lbl-canyon"><span class="num">01</span>Choose a canyon</h2><span class="sub">real elevation, rim to rim <button class="qbtn" id="methodBtn" type="button" aria-label="How the topography was measured" title="How the topography was measured">?</button></span></div>
   <div class="canyon-grid" id="canyonGrid" role="group" aria-label="Canyons"></div>
+  <div class="info-panel" id="infoPanel" hidden aria-live="polite"></div>
 </section>
 
 <section aria-labelledby="lbl-voices">
@@ -307,24 +332,33 @@
 </section>
 
 <section aria-labelledby="lbl-play">
-  <div class="label"><h2 id="lbl-play"><span class="num">03</span>Share this cut</h2><span class="sub">export it, post it, or save it with your email</span></div>
-  <div class="transport">
-    <button class="btn btn-secondary" id="btnExport" type="button" title="Render two minutes of this cut as an MP3">Export MP3 &middot; 2:00</button>
-    <button class="btn btn-secondary" id="btnCard" type="button" title="Make an image of this cut to post">Share card</button>
-    <button class="btn btn-secondary" id="btnRecut" type="button" title="New seed, same canyon">Re-cut</button>
-    <button class="btn btn-secondary" id="btnShare" type="button">Share</button>
+  <div class="label"><h2 id="lbl-play"><span class="num">03</span>Pass the needle</h2><span class="sub">name it, sign it, send it on</span></div>
+  <div class="pass">
+    <div class="step"><label for="cutName"><span class="n">1</span>Name your cut</label><input id="cutName" maxlength="40" placeholder="Dusk over the South Rim" autocomplete="off"></div>
+    <div class="step"><label for="byName"><span class="n">2</span>Sign it</label><input id="byName" maxlength="24" placeholder="Your first name" autocomplete="given-name"></div>
+    <div class="step"><label for="btnPass"><span class="n">3</span>Send it</label><button class="btn btn-primary" id="btnPass" type="button">Pass the needle</button></div>
   </div>
+  <p class="pass-hint" id="passHint">You get a link with your name on it and a card to post. Whoever opens the link hears your exact cut, sees who passed it, and gets the same three steps. Every pass is a new pressing.</p>
   <div class="status" id="status"></div>
   <div class="progress" id="progress"><i></i></div>
   <div class="share-box">
     <input id="shareUrl" type="text" readonly aria-label="Share link" spellcheck="false">
     <button class="btn btn-secondary" id="btnCopy" type="button" style="font-size:1rem">Copy</button>
   </div>
+  <div class="more-ways">
+    <div class="k">More ways to take it with you</div>
+    <div class="transport">
+      <button class="btn btn-secondary" id="btnExport" type="button" title="Render two minutes of this cut as an MP3">Export MP3 &middot; 2:00</button>
+      <button class="btn btn-secondary" id="btnCard" type="button" title="Make an image of this cut to post">Share card</button>
+      <button class="btn btn-secondary" id="btnRecut" type="button" title="New seed, same canyon">Re-cut</button>
+      <button class="btn btn-secondary" id="btnShare" type="button">Share link</button>
+    </div>
+  </div>
 
   <div class="save" id="saveBox">
     <div>
       <h3>Save this cut</h3>
-      <p>Name it and add your email. The cut is filed under your name with <em>The Catalog</em>, Jonathan Corley’s weekly dispatch on ideas, tools, and the people building tomorrow’s experiences. You get the newsletter, the cut stays yours, and the link is copied the moment you save.</p>
+      <p>Add your email and the cut above is filed under your name with <em>The Catalog</em>, Jonathan Corley’s weekly dispatch on ideas, tools, and the people building tomorrow’s experiences. You get the newsletter, the cut stays yours, and the link is copied the moment you save.</p>
     </div>
     <form id="saveForm" action="https://buttondown.com/api/emails/embed-subscribe/catalog" method="post" target="_blank">
       <input type="hidden" name="embed" value="1">
@@ -333,7 +367,6 @@
       <input type="hidden" name="metadata__cut-name" id="mCutName" value="">
       <input type="hidden" name="metadata__cut-url" id="mCutUrl" value="">
       <input type="hidden" name="metadata__canyon" id="mCanyon" value="">
-      <input type="text" id="cutName" name="cut_name_visible" maxlength="60" placeholder="Name this cut" required aria-label="Name this cut">
       <input type="email" name="email" placeholder="you@example.com" required autocomplete="email" aria-label="Email">
       <button class="btn btn-primary" type="submit" style="font-size:1rem;justify-content:center">Save &amp; subscribe</button>
       <span class="fine">Confirmation arrives from Buttondown. Unsubscribe any time; the cut link still works.</span>
@@ -383,11 +416,7 @@
   <a href="#top" id="dockTop">Top</a>
 </div>
 
-<dialog id="infoDialog" aria-labelledby="dlgTitle">
-  <div class="dlg" id="dlgBody"></div>
-</dialog>
-
-<script src="assets/site.js"></script>
+<script src="assets/site.js?v=3"></script>
 <script>
 'use strict';
 
@@ -579,7 +608,9 @@ function defaultVoice(key) {
 const state = {
   canyon: null, T: null, layers: new Set(DEFAULT_LAYERS), voice: {},
   keyOverride: null, moodOverride: null, seed: 0, custom: null, pendingCustom: false, tuning: null,
+  cut: { name: '', by: '', gen: 0 },
 };
+const cleanName = (v, n) => String(v || '').replace(/[,<>&"]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, n);
 for (const k of ORDER) state.voice[k] = defaultVoice(k);
 function effectiveRoot() { return state.keyOverride == null ? state.T.root : state.keyOverride; }
 function effectiveMood() { return state.moodOverride || state.T.mood; }
@@ -597,7 +628,7 @@ function findCanyon(id) { if (id === 'custom' && state.custom) return state.cust
 function parseHash() {
   const raw = decodeURIComponent(location.hash.slice(1));
   const toks = raw.split(',').map(s => s.trim()).filter(Boolean);
-  const out = { canyonId: null, layers: [], inst: {}, params: {}, key: null, mood: null, seed: null, at: null, name: null, today: false };
+  const out = { canyonId: null, layers: [], inst: {}, params: {}, key: null, mood: null, seed: null, at: null, name: null, today: false, cut: '', by: '', gen: 0 };
   for (const t of toks) {
     const eq = t.indexOf('=');
     if (eq > 0) {
@@ -609,6 +640,9 @@ function parseHash() {
       else if (k === 'seed' && /^\d+$/.test(v)) out.seed = parseInt(v, 10) >>> 0;
       else if (k === 'at') { const p = v.split('/').map(Number); if (p.length === 4 && p.every(Number.isFinite)) out.at = p; }
       else if (k === 'n') out.name = v.slice(0, 48);
+      else if (k === 'cut') out.cut = cleanName(v, 40);
+      else if (k === 'by') out.by = cleanName(v, 24);
+      else if (k === 'gen' && /^\d+$/.test(v)) out.gen = Math.min(9999, parseInt(v, 10));
       continue;
     }
     const colon = t.indexOf(':');
@@ -627,6 +661,9 @@ function hashString() {
   if (state.keyOverride != null) parts.push('key=' + NOTE_NAMES[state.keyOverride].replace('#', 's'));
   if (state.moodOverride) parts.push('mood=' + state.moodOverride);
   parts.push('seed=' + state.seed);
+  if (state.cut.name) parts.push('cut=' + state.cut.name);
+  if (state.cut.by) parts.push('by=' + state.cut.by);
+  if (state.cut.gen) parts.push('gen=' + state.cut.gen);
   if (state.canyon.id === 'custom') {
     parts.push('at=' + [state.canyon.a[0], state.canyon.a[1], state.canyon.b[0], state.canyon.b[1]].map(v => +v.toFixed(4)).join('/'));
     if (state.canyon.name) parts.push('n=' + state.canyon.name.replace(/,/g, ' '));
@@ -1034,6 +1071,14 @@ function encodeWav(buf) {
 
 /* ------------------------------------------------------------- share card */
 async function shareCard() {
+  const file = await renderCard();
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: 'Canyon Groove: ' + state.canyon.name, text: shareHref() }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+  }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
+  setStatus('<span class="ok">Card saved.</span> Post it with the link.');
+}
+async function renderCard() {
   const W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const ctx = cv.getContext('2d'), T = state.T;
   try { await document.fonts.load('120px "Bebas Neue"'); await document.fonts.load('28px "Courier Prime"'); } catch (e) {}
@@ -1055,7 +1100,10 @@ async function shareCard() {
   ctx.fillStyle = '#e8e0cc'; ctx.font = '64px "Bebas Neue", Impact, sans-serif';
   const name = state.canyon.name.toUpperCase(); ctx.fillText(name.length > 26 ? name.slice(0, 25) + '…' : name, padX, 380);
   ctx.fillStyle = '#7d7566'; ctx.font = '26px "Courier Prime", monospace';
-  ctx.fillText(state.canyon.place.toUpperCase() + '  ·  ' + fmtM(T.relief).toUpperCase() + ' RELIEF  ·  ' + state.canyon.km.toFixed(0) + ' KM', padX, 460);
+  const cutLine = state.cut.name ? '“' + state.cut.name.toUpperCase() + '”' + (state.cut.by ? '  ·  CUT BY ' + state.cut.by.toUpperCase() : '') : state.canyon.place.toUpperCase() + '  ·  ' + fmtM(T.relief).toUpperCase() + ' RELIEF  ·  ' + state.canyon.km.toFixed(0) + ' KM';
+  ctx.fillText(cutLine.length > 44 ? cutLine.slice(0, 43) + '…' : cutLine, padX, 460);
+  ctx.textAlign = 'right'; ctx.fillStyle = '#4a463d'; ctx.font = '24px "Courier Prime", monospace';
+  ctx.fillText('PRESSING NO. ' + pressingNo() + (state.cut.gen ? '  ·  ' + ordinal(state.cut.gen).toUpperCase() + ' PASS' : ''), W - padX, 80); ctx.textAlign = 'left';
   const voices = ORDER.filter(k => state.layers.has(k)).map(k => INSTRUMENTS[k][state.voice[k].inst].toLowerCase()).join(' · ');
   ctx.fillStyle = '#e8e0cc'; ctx.font = '30px "Courier Prime", monospace';
   ctx.fillText(NOTE_NAMES[effectiveRoot()] + ' ' + MOODS[effectiveMood()].label.toLowerCase() + '  ·  ' + voices, padX, 1150);
@@ -1063,15 +1111,35 @@ async function shareCard() {
   const url = shareHref().replace(/^https?:\/\//, ''); ctx.fillText(url.length > 70 ? url.slice(0, 69) + '…' : url, padX, 1205);
   ctx.fillStyle = '#4a463d'; ctx.font = '22px "Courier Prime", monospace'; ctx.fillText('CUMBERLAND COAST  ·  REAL TOPOGRAPHY, PLAYED AS A RECORD', padX, 1270);
   const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
-  const file = new File([blob], 'canyon-groove-' + state.canyon.id + '.png', { type: 'image/png' });
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    try { await navigator.share({ files: [file], title: 'Canyon Groove: ' + state.canyon.name, text: shareHref() }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
-  }
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
-  setStatus('<span class="ok">Card saved.</span> Post it with the link.');
+  return new File([blob], 'canyon-groove-' + state.canyon.id + '-' + pressingNo() + '.png', { type: 'image/png' });
 }
 
 /* ------------------------------------------------------------------ share */
+function ordinal(n) { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
+function pressingNo() { return String(state.seed % 10000).padStart(4, '0'); }
+async function passNeedle() {
+  const name = cleanName($('cutName').value, 40) || (state.canyon.name + ' cut');
+  const by = cleanName($('byName').value, 24);
+  if (!by) { $('byName').focus(); setStatus('<span class="warn">Sign it first.</span> A first name is enough.'); return; }
+  state.cut = { name, by, gen: (state.cut.gen || 0) + 1 };
+  writeHash(); ui.cutInfo();
+  const url = shareHref();
+  const text = '“' + name + '”: ' + state.canyon.name + ' played as a record, ' + NOTE_NAMES[effectiveRoot()] + ' ' + MOODS[effectiveMood()].label.toLowerCase() + '. Cut by ' + by + '. Listen, then pass the needle.';
+  let cardFile = null;
+  try { cardFile = await renderCard(); } catch (e) {}
+  if (navigator.share) {
+    const payload = { title: 'Canyon Groove: ' + name, text, url };
+    try {
+      if (cardFile && navigator.canShare && navigator.canShare({ files: [cardFile] })) await navigator.share({ files: [cardFile], title: payload.title, text: text + ' ' + url });
+      else await navigator.share(payload);
+      setStatus('<span class="ok">Passed.</span> Pressing ' + ordinal(state.cut.gen) + ', number ' + pressingNo() + '.');
+      return;
+    } catch (e) { if (e && e.name === 'AbortError') return; }
+  }
+  await copyLink(true);
+  if (cardFile) { const a = document.createElement('a'); a.href = URL.createObjectURL(cardFile); a.download = cardFile.name; document.body.appendChild(a); a.click(); a.remove(); }
+  setStatus('<span class="ok">Link copied and card saved.</span> Post them together. Pressing ' + ordinal(state.cut.gen) + ', number ' + pressingNo() + '.');
+}
 async function share() {
   const url = shareHref(), title = 'Canyon Groove: ' + state.canyon.name;
   const text = state.canyon.name + ' played as a record. ' + NOTE_NAMES[effectiveRoot()] + ', ' + MOODS[effectiveMood()].label.toLowerCase() + '.';
@@ -1132,22 +1200,39 @@ let hashTimer = null;
 function writeHashSoon() { clearTimeout(hashTimer); hashTimer = setTimeout(writeHash, 150); }
 function setStatus(html) { $('status').innerHTML = html; }
 
-/* ---------------------------------------------------------------- dialogs */
-function openDialog(html) { $('dlgBody').innerHTML = html; const d = $('infoDialog'); if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', ''); }
-function canyonDialog(c) {
-  const T = analyze(c), relief = fmtM(T.relief);
-  openDialog('<h3 id="dlgTitle">' + esc(c.name) + '</h3><div class="sub">' + esc(c.place) + ' &middot; ' + relief + ' relief &middot; ' + c.km.toFixed(1) + ' km line</div>'
-    + '<p>' + esc(c.about) + '</p>'
-    + '<p><strong>The line.</strong> ' + esc(c.ends[0]) + ' to ' + esc(c.ends[1]) + ', floor at ' + fmtM(T.min) + ', high point ' + fmtM(T.max) + '. Contour lines every ' + T.contour + ' m, sample every ' + Math.round(T.stepM) + ' m.</p>'
-    + '<div class="row"><button class="btn btn-primary" type="button" data-play="' + esc(c.id) + '" style="font-size:1rem">Play this canyon</button>'
-    + '<a href="' + esc(c.source.url) + '" target="_blank" rel="noopener">' + esc(c.source.label) + ' &nearr;</a>'
-    + '<button class="chip-btn" type="button" data-close>Close</button></div>'
-    + '<div class="coords">' + c.a[0].toFixed(4) + ', ' + c.a[1].toFixed(4) + ' &rarr; ' + c.b[0].toFixed(4) + ', ' + c.b[1].toFixed(4) + ' &middot; ' + (c.src === 'open-elevation' ? 'SRTM via Open-Elevation' : 'Copernicus DEM GLO-90 via Open-Meteo') + '</div>');
+/* ------------------------------------------------------------- info panel */
+/* Inline, not a modal. A centered dialog inside a tall iframe lands wherever the
+   frame's box happens to be and drags the host page along with it. */
+let infoTrigger = null;
+function outbound(url) { try { const u = new URL(url); u.searchParams.set('utm_source', 'cumberlandcoast.com'); u.searchParams.set('utm_medium', 'referral'); u.searchParams.set('utm_campaign', 'canyon-groove'); return u.toString(); } catch (e) { return url; } }
+function openInfo(html, trigger) {
+  infoTrigger = trigger || document.activeElement;
+  const p = $('infoPanel'); p.innerHTML = html; p.hidden = false;
+  p.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeInfo));
+  p.querySelectorAll('[data-play]').forEach(b => b.addEventListener('click', () => { const c = findCanyon(b.dataset.play); closeInfo(); if (c) { selectCanyon(c); if (!audio.playing) play(); } }));
+  requestAnimationFrame(() => { CCLab.reveal(p); const f = p.querySelector('[data-close]'); if (f) try { f.focus({ preventScroll: true }); } catch (e) {} });
 }
-function methodDialog() {
-  openDialog('<h3 id="dlgTitle">How the terrain was measured</h3><div class="sub">and how far to trust it</div>'
-    + METHOD_TEXT.map(([h, p]) => '<p><strong>' + h + '.</strong> ' + p + '</p>').join('')
-    + '<div class="row"><a href="canyons.json" target="_blank" rel="noopener">canyons.json &nearr;</a><a href="https://open-meteo.com/en/docs/elevation-api" target="_blank" rel="noopener">Open-Meteo Elevation API &nearr;</a><a href="https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model" target="_blank" rel="noopener">Copernicus DEM &nearr;</a><button class="chip-btn" type="button" data-close>Close</button></div>');
+function closeInfo() {
+  const p = $('infoPanel'); if (p.hidden) return; p.hidden = true; p.innerHTML = '';
+  if (infoTrigger && infoTrigger.isConnected) try { infoTrigger.focus({ preventScroll: true }); } catch (e) {}
+  infoTrigger = null;
+}
+function infoShell(title, sub, body, actions, foot) {
+  return '<div class="info-head"><div><h3>' + title + '</h3><div class="sub">' + sub + '</div></div><button class="chip-btn" type="button" data-close aria-label="Close">Close</button></div>'
+    + '<div class="info-body"><div>' + body + '</div><div class="info-actions">' + actions + '</div><div class="info-foot">' + foot + '</div></div>';
+}
+function canyonDialog(c, trigger) {
+  const T = analyze(c);
+  openInfo(infoShell(esc(c.name), esc(c.place) + ' &middot; ' + fmtM(T.relief) + ' relief &middot; ' + c.km.toFixed(1) + ' km line',
+    '<p>' + esc(c.about) + '</p><p><strong>The line.</strong> ' + esc(c.ends[0]) + ' to ' + esc(c.ends[1]) + ', floor at ' + fmtM(T.min) + ', high point ' + fmtM(T.max) + '. Contour lines every ' + T.contour + ' m, sample every ' + Math.round(T.stepM) + ' m.</p>',
+    '<button class="btn btn-primary" type="button" data-play="' + esc(c.id) + '">Play this canyon</button><a class="more" href="' + esc(outbound(c.source.url)) + '" target="_blank" rel="noopener">Learn more &nearr;</a>',
+    'Source: ' + esc(c.source.label) + ' &middot; Terrain: ' + (c.src === 'open-elevation' ? 'SRTM via Open-Elevation' : 'Copernicus DEM GLO-90 via Open-Meteo') + ' &middot; ' + c.a[0].toFixed(4) + ', ' + c.a[1].toFixed(4) + ' &rarr; ' + c.b[0].toFixed(4) + ', ' + c.b[1].toFixed(4)), trigger);
+}
+function methodDialog(trigger) {
+  openInfo(infoShell('How the terrain was measured', 'and how far to trust it',
+    METHOD_TEXT.map(([h, p]) => '<p><strong>' + h + '.</strong> ' + p + '</p>').join(''),
+    '<a class="more" href="canyons.json" target="_blank" rel="noopener">The dataset &nearr;</a><a class="more" href="' + outbound('https://open-meteo.com/en/docs/elevation-api') + '" target="_blank" rel="noopener">Learn more &nearr;</a>',
+    'Source: Open-Meteo Elevation API, Copernicus DEM GLO-90 (ESA). Compiled for Canyon Groove, cumberlandcoast.com, September 2026.'), trigger);
 }
 
 /* --------------------------------------------------------------------- UI */
@@ -1162,7 +1247,7 @@ const ui = {
         + '<canvas class="spark" width="88" height="32" aria-hidden="true"></canvas>'
         + '<button type="button" class="canyon-info" aria-label="About ' + esc(c.name) + '" title="About this canyon">?</button>';
       d.querySelector('.canyon-main').addEventListener('click', () => selectCanyon(c));
-      d.querySelector('.canyon-info').addEventListener('click', () => canyonDialog(c));
+      d.querySelector('.canyon-info').addEventListener('click', e => canyonDialog(c, e.currentTarget));
       grid.appendChild(d); drawSpark(d.querySelector('canvas'), c.elev);
     }
     ui.canyonPressed();
@@ -1174,7 +1259,7 @@ const ui = {
     $('canyonName').textContent = c.name; $('canyonPlace').textContent = c.place;
     $('endA').textContent = '← ' + c.ends[0]; $('endB').textContent = c.ends[1] + ' →';
     $('canyonNote').innerHTML = esc(c.note) + ' <em>Floor ' + fmtM(T.min) + ', rim ' + fmtM(T.max) + '.</em> <button class="link" type="button" id="noteAbout">About this canyon</button>';
-    $('noteAbout').addEventListener('click', () => canyonDialog(c));
+    $('noteAbout').addEventListener('click', e => canyonDialog(c, e.currentTarget));
     $('rRelief').textContent = fmtM(T.relief); $('rWidth').textContent = c.km.toFixed(1) + ' km';
     $('rContour').textContent = 'every ' + T.contour + ' m';
     $('rLoops').textContent = ORDER.map(k => Math.round(T.loopBase * LOOP_RATIOS[k])).join(' / ') + ' s';
@@ -1208,7 +1293,7 @@ const ui = {
     const on = ORDER.filter(k => state.layers.has(k));
     $('voiceHint').textContent = on.length === 0 ? 'no voices on' : on.length === 1 ? LAYERS[on[0]].label.toLowerCase() + ' alone' : on.length + ' voices, each on its own loop';
   },
-  tune(key) { state.tuning = key; ui.pads(); ui.voicePanel(); if (key) $('voicePanel').scrollIntoView({ block: 'nearest', behavior: 'smooth' }); },
+  tune(key) { state.tuning = key; ui.pads(); ui.voicePanel(); if (key) requestAnimationFrame(() => CCLab.reveal($('voicePanel'))); },
   voicePanel() {
     const panel = $('voicePanel'), k = state.tuning; panel.hidden = !k; if (!k) return;
     panel.style.setProperty('--pad-color', LAYERS[k].color); $('vpName').textContent = LAYERS[k].label;
@@ -1233,8 +1318,19 @@ const ui = {
     $('discCaption').textContent = onoff ? 'playing · ' + state.canyon.id : '33⅓ · side A';
     ui.hint();
   },
+  cutInfo() {
+    const ct = $('cutTitle'), pb = $('passedBanner'), cut = state.cut;
+    ct.hidden = !cut.name; if (cut.name) ct.innerHTML = '“' + esc(cut.name) + '” ' + (cut.by ? '<span>cut by ' + esc(cut.by) + '</span>' : '');
+    pb.hidden = !cut.by;
+    if (cut.by) pb.innerHTML = '<span class="tag">Passed to you</span><span><b>' + esc(cut.by) + '</b> sent you this cut' + (cut.gen ? ', pressing ' + ordinal(cut.gen) : '') + '. Press play, then re-cut it and pass it on.</span>';
+    if ($('cutName').value !== cut.name) $('cutName').value = cut.name;
+    $('passHint').innerHTML = cut.by
+      ? 'You are holding <b>' + esc(cut.by) + '</b>’s cut. Rename it or leave it, sign it, and pass it on. Yours will be pressing ' + ordinal((cut.gen || 1) + 1) + '.'
+      : 'You get a link with your name on it and a card to post. Whoever opens the link hears your exact cut, sees who passed it, and gets the same three steps. Every pass is a new pressing.';
+  },
   hint() {
     const c = state.canyon;
+    ui.cutInfo();
     $('playHint').innerHTML = audio.playing
       ? 'The needle is in the groove. Try another canyon below, or open a voice’s <b>tune</b> tab. Space bar pauses.'
       : 'Press play to drop the needle on <b>' + esc(c.name) + '</b>. Then change the canyon or tune the voices.';
@@ -1310,6 +1406,7 @@ function applyHash(initial) {
   for (const k of ORDER) { const v = defaultVoice(k); if (h.inst[k]) v.inst = h.inst[k]; if (h.params[k]) Object.assign(v, h.params[k]); state.voice[k] = v; }
   if (h.layers.length) state.layers = new Set(h.layers); else if (initial) state.layers = new Set(DEFAULT_LAYERS);
   if (h.seed != null) state.seed = h.seed; else if (initial || !state.seed) state.seed = (Math.random() * 1e9) >>> 0;
+  state.cut = { name: h.cut, by: h.by, gen: h.gen };
   if (h.at) cutCustom([h.at[0], h.at[1]], [h.at[2], h.at[3]], h.name, true);
   const c = (h.canyonId && findCanyon(h.canyonId)) || (h.at ? null : CANYONS[0]);
   if (c) { state.canyon = c; state.T = analyze(c); } else if (!state.canyon) { state.canyon = CANYONS[0]; state.T = analyze(CANYONS[0]); }
@@ -1328,18 +1425,21 @@ function boot() {
   }
   $('btnExport').addEventListener('click', exportMp3);
   $('btnCard').addEventListener('click', shareCard);
+  $('btnPass').addEventListener('click', passNeedle);
+  $('cutName').addEventListener('change', () => { state.cut.name = cleanName($('cutName').value, 40); writeHash(); ui.cutInfo(); });
+  $('byName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); passNeedle(); } });
   $('btnRecut').addEventListener('click', () => { state.seed = (Math.random() * 1e9) >>> 0; writeHash(); restartIfPlaying(); setStatus('New cut, seed ' + state.seed + '.'); });
   $('btnShare').addEventListener('click', share);
   $('btnCopy').addEventListener('click', () => copyLink());
   $('shareUrl').addEventListener('focus', e => e.target.select());
-  $('methodBtn').addEventListener('click', methodDialog);
-  $('infoDialog').addEventListener('click', e => { const t = e.target; if (t.matches('[data-close]') || t === e.currentTarget) $('infoDialog').close(); else if (t.matches('[data-play]')) { const c = findCanyon(t.dataset.play); $('infoDialog').close(); if (c) { selectCanyon(c); if (!audio.playing) play(); } } });
+  $('methodBtn').addEventListener('click', e => methodDialog(e.currentTarget));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfo(); });
   $('keySel').addEventListener('change', e => { state.keyOverride = e.target.value === 'auto' ? null : parseInt(e.target.value, 10); writeHash(); restartIfPlaying(); });
   $('modeSel').addEventListener('change', e => { state.moodOverride = e.target.value === 'auto' ? null : e.target.value; writeHash(); restartIfPlaying(); });
   $('vpClose').addEventListener('click', () => ui.tune(null));
   $('vpReset').addEventListener('click', () => { const k = state.tuning; if (!k) return; const was = state.voice[k].inst; state.voice[k] = defaultVoice(k); liveUpdate(k); if (was !== state.voice[k].inst) liveRestart(k); ui.pads(); ui.voicePanel(); writeHash(); });
   $('saveForm').addEventListener('submit', () => {
-    const name = $('cutName').value.trim() || 'Untitled cut';
+    const name = cleanName($('cutName').value, 40) || 'Untitled cut';
     $('mCutName').value = name; $('mCutUrl').value = shareHref(); $('mCanyon').value = state.canyon.name;
     copyLink(true);
     setStatus('<span class="ok">Saved “' + esc(name) + '”.</span> Link copied. Confirm the email from The Catalog when it lands.');
@@ -1359,7 +1459,7 @@ function boot() {
     writeHash();
   });
   window.addEventListener('resize', draw);
-  document.addEventListener('keydown', e => { if (e.code === 'Space' && !/input|select|textarea|button/i.test(e.target.tagName) && !$('infoDialog').open) { e.preventDefault(); audio.playing ? stop() : play(); } });
+  document.addEventListener('keydown', e => { if (e.code === 'Space' && !/input|select|textarea|button/i.test(e.target.tagName)) { e.preventDefault(); audio.playing ? stop() : play(); } });
   document.addEventListener('visibilitychange', () => { if (!document.hidden && audio.ctx && audio.ctx.state === 'suspended' && audio.playing) audio.ctx.resume(); });
   setStatus('Export a two-minute MP3, post a share card, or save the cut with your email.');
   loop();

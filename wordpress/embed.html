@@ -22,6 +22,11 @@
     var d = e.data || {};
     if (d.type === 'cg-height' && d.h) f.style.height = (d.h + 24) + 'px';
     if (d.type === 'cg-hash' && typeof d.hash === 'string') { try { history.replaceState(null, '', d.hash || location.pathname); } catch (err) {} }
+    if (d.type === 'cg-scroll' && typeof d.top === 'number') {
+      var abs = f.getBoundingClientRect().top + window.pageYOffset + d.top, m = d.margin || 24;
+      var vis = abs >= window.pageYOffset + m && abs + d.height <= window.pageYOffset + window.innerHeight - m;
+      if (!vis) window.scrollTo({ top: Math.max(0, abs - m), behavior: 'smooth' });
+    }
   });
 })();
 </script>
