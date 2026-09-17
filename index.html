@@ -329,7 +329,7 @@
   <div class="label"><h2 id="lbl-play"><span class="num">03</span>Share</h2><span class="sub">capture what you created</span></div>
   <div class="share-row">
     <input id="cutName" maxlength="40" placeholder="Name your cut" autocomplete="off" aria-label="Name your cut">
-    <input id="byName" maxlength="24" placeholder="Your first name" autocomplete="given-name" aria-label="Your first name">
+    <input id="byName" maxlength="24" placeholder="Your name" autocomplete="name" aria-label="Your name">
     <button class="btn btn-primary" id="btnPass" type="button">Share</button>
   </div>
   <p class="share-hint" id="passHint">Your link and a card, with your name on it.</p>
@@ -630,8 +630,8 @@ function hashString() {
   if (state.keyOverride != null) parts.push('key=' + NOTE_NAMES[state.keyOverride].replace('#', 's'));
   if (state.moodOverride) parts.push('mood=' + state.moodOverride);
   parts.push('seed=' + state.seed);
-  if (state.cut.name) parts.push('cut=' + state.cut.name);
-  if (state.cut.by) parts.push('by=' + state.cut.by);
+  if (state.cut.name) parts.push('cut=' + encodeURIComponent(state.cut.name));
+  if (state.cut.by) parts.push('by=' + encodeURIComponent(state.cut.by));
   if (state.cut.gen) parts.push('gen=' + state.cut.gen);
   return '#' + parts.join(',');
 }
@@ -1107,18 +1107,18 @@ function pressingNo() { return String(state.seed % 10000).padStart(4, '0'); }
 async function passNeedle() {
   const name = cleanName($('cutName').value, 40) || (state.canyon.name + ' cut');
   const by = cleanName($('byName').value, 24);
-  if (!by) { $('byName').focus(); setStatus('<span class="warn">Add your first name first.</span>'); return; }
+  if (!by) { $('byName').focus(); setStatus('<span class="warn">Add your name first.</span>'); return; }
   state.cut = { name, by, gen: (state.cut.gen || 0) + 1 };
   writeHash(); ui.cutInfo();
   const url = shareHref();
-  const text = '“' + name + '”: ' + state.canyon.name + ' played as a record, ' + NOTE_NAMES[effectiveRoot()] + ' ' + MOODS[effectiveMood()].label.toLowerCase() + '. Cut by ' + by + '. Listen, then pass the needle.';
+  const text = state.canyon.name + ', played as a record. Cut by ' + by + '. Press play, then pass it on.';
   let cardFile = null;
   try { cardFile = await renderCard(); } catch (e) {}
   if (navigator.share) {
-    const payload = { title: 'Canyon Groove: ' + name, text, url };
+    const title = '“' + name + '” on Canyon Groove';
     try {
-      if (cardFile && navigator.canShare && navigator.canShare({ files: [cardFile] })) await navigator.share({ files: [cardFile], title: payload.title, text: text + ' ' + url });
-      else await navigator.share(payload);
+      if (cardFile && navigator.canShare && navigator.canShare({ files: [cardFile] })) await navigator.share({ files: [cardFile], title, text: text + '\n' + url });
+      else await navigator.share({ title, text, url });
       setStatus('<span class="ok">Shared.</span> Pressing ' + ordinal(state.cut.gen) + ', number ' + pressingNo() + '.');
       return;
     } catch (e) { if (e && e.name === 'AbortError') return; }
@@ -1128,8 +1128,8 @@ async function passNeedle() {
   setStatus('<span class="ok">Link copied and card saved.</span> Post them together.');
 }
 async function share() {
-  const url = shareHref(), title = 'Canyon Groove: ' + state.canyon.name;
-  const text = state.canyon.name + ' played as a record. ' + NOTE_NAMES[effectiveRoot()] + ', ' + MOODS[effectiveMood()].label.toLowerCase() + '.';
+  const url = shareHref(), title = (state.cut.name ? '“' + state.cut.name + '” on ' : '') + 'Canyon Groove';
+  const text = state.canyon.name + ', played as a record.' + (state.cut.by ? ' Cut by ' + state.cut.by + '.' : '');
   if (navigator.share) { try { await navigator.share({ title, text, url }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
   copyLink();
 }
@@ -1399,11 +1399,29 @@ function boot() {
   $('modeSel').addEventListener('change', e => { state.moodOverride = e.target.value === 'auto' ? null : e.target.value; writeHash(); restartIfPlaying(); });
   $('vpClose').addEventListener('click', () => ui.tune(null));
   $('vpReset').addEventListener('click', () => { const k = state.tuning; if (!k) return; const was = state.voice[k].inst; state.voice[k] = defaultVoice(k); liveUpdate(k); if (was !== state.voice[k].inst) liveRestart(k); ui.pads(); ui.voicePanel(); writeHash(); });
-  $('saveForm').addEventListener('submit', () => {
-    const name = cleanName($('cutName').value, 40) || 'Untitled cut';
+  $('saveForm').addEventListener('submit', async e => {
+    const form = e.currentTarget, name = cleanName($('cutName').value, 40) || 'Untitled cut';
     $('mCutName').value = name; $('mCutUrl').value = shareHref(); $('mCanyon').value = state.canyon.name;
-    copyLink(true);
-    setStatus('<span class="ok">Saved “' + esc(name) + '”.</span> Link copied. Confirm the email from Buttondown when it lands.');
+    if (form.dataset.fallback === '1') return;            // second pass: let the plain post go through
+    e.preventDefault();
+    const btn = form.querySelector('button[type=submit]'); btn.disabled = true;
+    setStatus('Saving…');
+    let handled = false;
+    try {
+      const r = await fetch('api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: form.email.value, cut: name, url: shareHref(), canyon: state.canyon.name }) });
+      const j = await r.json().catch(() => null);
+      if (!j || typeof j.ok !== 'boolean') throw new Error('no route');   // static host, no function here
+      handled = true;
+      if (j.ok) {
+        copyLink(true);
+        setStatus(j.state === 'new'
+          ? '<span class="ok">Saved “' + esc(name) + '”.</span> Check your inbox for a confirmation from The Catalog, then you’re in. Link copied.'
+          : '<span class="ok">Saved “' + esc(name) + '”</span> to your existing subscription. Link copied.');
+        form.reset();
+      } else setStatus('<span class="warn">' + esc(j.error || 'Could not save.') + '</span>');
+    } catch (err) { /* route unavailable: fall through to the plain form */ }
+    btn.disabled = false;
+    if (!handled) { form.dataset.fallback = '1'; copyLink(true); setStatus('<span class="ok">Saving “' + esc(name) + '”</span> with Buttondown in a new tab. Confirm the email when it lands. Link copied.'); form.submit(); form.dataset.fallback = ''; }
   });
   window.addEventListener('hashchange', () => {
     const prev = [state.canyon.id, state.keyOverride, state.moodOverride, state.seed].join('|'), prevVoices = voiceSig();

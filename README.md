@@ -65,7 +65,7 @@ The app rewrites the hash with `history.replaceState` on every change, so the ad
 - **Copy link** copies the current cut’s URL.
 - **Save card** renders a 1080 by 1350 PNG of the cut (profile, cut name, who cut it, pressing number, key, mood, voices, link) over a photograph of that canyon, and hands it to the share sheet, or downloads it. Photos live in `images/` with `manifest.json` and `CREDITS.md`; 92 Unsplash-licensed shots, five to seven per canyon, a generic pool for the two canyons with no usable photos (Cotahuasi borrows Colca’s, Kali Gandaki borrows the Nanga Parbat set). `IMAGE_BASE` in `index.html` can point at another host, such as WordPress media, if that host sends CORS headers.
 - **Download MP3** renders two minutes offline with the same engine and encodes a 192 kbps MP3 in the browser with [lamejs](https://github.com/zhuker/lamejs). Falls back to WAV if the encoder cannot load. Takes a few seconds.
-- **Keep this cut** posts the cut name and an email to Buttondown as a subscriber to *The Catalog*, tagged `canyon-groove`, with the cut’s name, URL, and canyon stored as subscriber metadata. Buttondown handles confirmation. The link is copied to the clipboard on save.
+- **Keep this cut** sends the email and the cut to `api/subscribe`, a small Vercel function that creates the subscriber through Buttondown’s API (tag `canyon-groove`, metadata `cut-name`, `cut-url`, `canyon`, `saved-at`) and returns a result the page can show: “Saved, check your inbox” for a new subscriber, “saved to your existing subscription” for a known one. It needs `BUTTONDOWN_API_KEY` set in the Vercel project (Buttondown: Settings, API). Without the route, for example on GitHub Pages or a local server, the form falls back to a plain Buttondown post in a new tab.
 - A centered **Subscribe to The Catalog** button sits above the credits and links to buttondown.com/catalog in a new tab. It shows in embed mode too.
 - The footer carries a plain **Subscribe** form to the same list, tagged `canyon-groove`, plus the site’s navigation and other links. The footer hides in embed mode.
 
@@ -107,7 +107,8 @@ Open `http://localhost:8765/`. The MP3 encoder needs network for its first load;
 ### Vercel (recommended host)
 
 1. At [vercel.com/new](https://vercel.com/new), import `agentcorley/canyon-groove`. Framework preset **Other**, no build command, no output directory.
-2. Deploy. You get `https://canyon-groove.vercel.app`.
+2. Under Environment Variables add `BUTTONDOWN_API_KEY` with the key from Buttondown (Settings, API). This powers the in-page “Keep this cut” confirmation.
+3. Deploy. You get `https://canyon-groove.vercel.app`.
 3. Optional custom domain: add `groove.cumberlandcoast.com` under the project’s Domains and create the CNAME Vercel shows you.
 
 Deep links such as `/#yarlung,bedrock,contours` and `/#today` work as-is.
@@ -138,6 +139,7 @@ Settings, Pages, deploy from `main` root. Works the same way; only the origin ch
 | `groove.jpg` | The photograph that started it |
 | `images/` | Canyon photographs for the share card, with `manifest.json` and `CREDITS.md` |
 | `og.png` | Social preview image |
+| `api/subscribe.js` | Vercel function: saves a cut with The Catalog through Buttondown’s API |
 | `vercel.json` | Clean URLs and a cache header |
 | `archive/prototype-v0.html` | The original prototype |
 
