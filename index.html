@@ -82,7 +82,8 @@
   .canyon-main .place { font-size: .64rem; opacity: .75; }
   .canyon-main .relief { font-size: .62rem; opacity: .6; margin-top: auto; }
   .canyon canvas.spark { position: absolute; right: 2.2rem; top: .55rem; width: 44px; height: 16px; opacity: .55; pointer-events: none; }
-  .canyon-info { background: transparent; border: 0; border-left: 1px solid var(--edge); color: var(--faint); cursor: pointer; padding: 0 .55rem; font-size: .75rem; font-weight: 700; min-width: 30px; }
+  .canyon-info { background: transparent; border: 0; border-left: 1px solid var(--edge); color: var(--cream-dim); cursor: pointer; padding: 0 .6rem; font-size: .85rem; font-weight: 700; min-width: 40px; display: grid; place-items: center; }
+  .canyon-info span { width: 22px; height: 22px; border-radius: 50%; border: 1px solid currentColor; display: grid; place-items: center; line-height: 1; }
   .canyon-info:hover { color: var(--amber); }
 
   /* Groove panel */
@@ -252,7 +253,14 @@
     .origin, .save { grid-template-columns: 1fr; }
     .play { width: 72px; height: 72px; }
     .label .sub { text-align: left; }
+    .canyon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+    .canyon-main { padding: .6rem .4rem .55rem .75rem; min-height: 96px; }
+    .canyon-main .name { font-size: .7rem; padding-right: 0; }
+    .canyon canvas.spark { display: none; }
+    .canyon-info { min-width: 36px; }
+    .subscribe-cta .big { font-size: 1.3rem; padding: .8rem 1.4rem .65rem; width: 100%; justify-content: center; }
   }
+  @media (max-width: 340px) { .canyon-grid { grid-template-columns: 1fr; } .canyon canvas.spark { display: block; } .canyon-main .name { padding-right: 44px; } }
   @media (prefers-reduced-motion: reduce) { .play.pulse::after { animation: none; } }
   @media (prefers-reduced-motion: reduce) { .btn-rec.on .dot { animation: none; } }
   body.embed { min-height: 0; }
@@ -1212,7 +1220,7 @@ const ui = {
       const d = document.createElement('div'); d.className = 'canyon'; d.dataset.id = c.id;
       d.innerHTML = '<button type="button" class="canyon-main" aria-pressed="false"><span class="name">' + esc(c.name) + '</span><span class="place">' + esc(c.place) + '</span><span class="relief">' + fmtM(relief) + ' relief · ' + c.km.toFixed(0) + ' km</span></button>'
         + '<canvas class="spark" width="88" height="32" aria-hidden="true"></canvas>'
-        + '<button type="button" class="canyon-info" aria-label="About ' + esc(c.name) + '" title="About this canyon">?</button>';
+        + '<button type="button" class="canyon-info" aria-label="About ' + esc(c.name) + '" title="About this canyon"><span aria-hidden="true">?</span></button>';
       d.querySelector('.canyon-main').addEventListener('click', () => selectCanyon(c));
       d.querySelector('.canyon-info').addEventListener('click', e => canyonDialog(c, e.currentTarget));
       grid.appendChild(d); drawSpark(d.querySelector('canvas'), c.elev);
