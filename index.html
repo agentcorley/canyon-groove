@@ -655,7 +655,7 @@ function hashString() {
   if (state.cut.gen) parts.push('gen=' + state.cut.gen);
   return '#' + parts.join(',');
 }
-function shareHref() { return CCLab.shareBase() + location.hash; }
+function shareHref() { return CCLab.shareBase() + hashString(); }
 function writeHash() {
   const h = hashString();
   if (location.hash !== h) { try { history.replaceState(null, '', h); } catch (e) { /* ignore */ } }
@@ -975,6 +975,7 @@ function play() {
   audio.eng = createEngine(audio.ctx, state.T, state.seed);
   audio.eng.start();
   audio.playing = true;
+  writeHash();
   clearInterval(audio.timer); audio.timer = setInterval(() => audio.eng.tick(), 50);
   ui.playing(true);
   setStatus('<span class="ok">Playing</span> ' + esc(state.canyon.name) + '. ' + NOTE_NAMES[effectiveRoot()] + ', ' + MOODS[effectiveMood()].label.toLowerCase() + '.');
@@ -1396,7 +1397,10 @@ function boot() {
   CCLab.footer($('labFooter'), { tag: 'canyon-groove', source: 'canyon-groove' });
   fetch(IMAGE_BASE + 'manifest.json').then(r => r.ok ? r.json() : []).then(j => { IMAGES = Array.isArray(j) ? j : (j.images || []); }).catch(() => {});
   applyHash(true);
-  ui.canyonGrid(); ui.pads(); ui.canyon(); writeHash();
+  ui.canyonGrid(); ui.pads(); ui.canyon();
+  // A random start leaves the address bar bare so a refresh deals a new hand.
+  // The cut is pinned into the URL the moment you play or change anything.
+  if (location.hash.length > 1) writeHash(); else $('shareUrl').value = shareHref();
   $('btnPlay').addEventListener('click', () => audio.playing ? stop() : play());
   $('dockPlay').addEventListener('click', () => audio.playing ? stop() : play());
   $('dockTop').addEventListener('click', e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
