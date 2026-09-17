@@ -1,0 +1,42 @@
+/* Cumberland Coast footer and subscribe block, for standalone hosting.
+   Themed by the host page through these variables. Defaults suit a dark page. */
+.lab-footer {
+  --lf-fg: var(--lab-fg, #e8e0cc);
+  --lf-muted: var(--lab-muted, #7d7566);
+  --lf-faint: var(--lab-faint, #4a463d);
+  --lf-accent: var(--lab-accent, #c8922a);
+  --lf-rule: var(--lab-rule, #2a2820);
+  --lf-field: var(--lab-field, #1a1a17);
+  --lf-font: var(--lab-font, ui-monospace, Menlo, monospace);
+  --lf-display: var(--lab-display, Impact, sans-serif);
+  font-family: var(--lf-font);
+  color: var(--lf-muted);
+  border-top: 1px solid var(--lf-rule);
+  padding-top: 1.6rem;
+  font-size: .78rem;
+  line-height: 1.7;
+}
+.lab-footer a { color: var(--lf-fg); text-decoration: none; border-bottom: 1px solid var(--lf-rule); }
+.lab-footer a:hover { color: var(--lf-accent); border-color: var(--lf-accent); }
+.lab-footer .lf-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1.4fr; gap: 1.5rem 2rem; }
+.lab-footer h4 { font-size: .6rem; letter-spacing: .24em; text-transform: uppercase; color: var(--lf-faint); margin: 0 0 .5rem; font-weight: 400; }
+.lab-footer .lf-brand { font-family: var(--lf-display); font-size: 1.6rem; letter-spacing: .08em; color: var(--lf-accent); line-height: 1; margin-bottom: .4rem; }
+.lab-footer .lf-brand a { border: 0; color: inherit; }
+.lab-footer .lf-brand span { color: var(--lf-faint); }
+.lab-footer ul { list-style: none; margin: 0; padding: 0; }
+.lab-footer li { margin: 0; }
+.lab-footer .lf-catalog p { margin: 0 0 .6rem; }
+.lab-footer form { display: flex; gap: .4rem; }
+.lab-footer input[type=email] {
+  flex: 1; min-width: 0; background: var(--lf-field); border: 1px solid var(--lf-rule); color: var(--lf-fg);
+  font-family: inherit; font-size: .8rem; padding: .55rem .7rem; outline: none;
+}
+.lab-footer input[type=email]:focus { border-color: var(--lf-accent); }
+.lab-footer button {
+  font-family: var(--lf-display); font-size: 1rem; letter-spacing: .12em; padding: .5rem 1rem .4rem; cursor: pointer;
+  background: transparent; border: 1px solid var(--lf-accent); color: var(--lf-accent); touch-action: manipulation;
+}
+.lab-footer button:hover { background: var(--lf-accent); color: #0a0a08; }
+.lab-footer .lf-legal { margin-top: 1.4rem; padding-top: .9rem; border-top: 1px solid var(--lf-rule); font-size: .64rem; letter-spacing: .08em; color: var(--lf-faint); display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; }
+@media (max-width: 760px) { .lab-footer .lf-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 460px) { .lab-footer .lf-grid { grid-template-columns: 1fr; } }

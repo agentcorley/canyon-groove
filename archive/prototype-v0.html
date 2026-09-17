@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canyon Groove</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a08;
+    --surface: #111110;
+    --groove: #1a1a17;
+    --amber: #c8922a;
+    --amber-dim: #6b4d15;
+    --cream: #e8e0cc;
+    --cream-dim: #6b6457;
+    --red: #c0392b;
+    --green: #2ecc71;
+    --grid: rgba(200,146,42,0.07);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Courier Prime', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  header {
+    width: 100%;
+    padding: 2.5rem 3rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid var(--amber-dim);
+  }
+
+  .title-block h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    letter-spacing: 0.12em;
+    color: var(--amber);
+    line-height: 0.9;
+  }
+
+  .title-block p {
+    font-size: 0.7rem;
+    color: var(--cream-dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+
+  .header-meta {
+    text-align: right;
+    font-size: 0.65rem;
+    color: var(--cream-dim);
+    letter-spacing: 0.1em;
+    line-height: 2;
+  }
+
+  main {
+    width: 100%;
+    max-width: 1100px;
+    padding: 2rem 2rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  /* Canyon selector */
+  .canyon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .canyon-btn {
+    background: var(--groove);
+    border: 1px solid var(--amber-dim);
+    color: var(--cream-dim);
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .canyon-btn::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--amber);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .canyon-btn:hover { border-color: var(--amber); color: var(--cream); }
+  .canyon-btn:hover::before { opacity: 1; }
+  .canyon-btn.active { border-color: var(--amber); color: var(--amber); background: rgba(200,146,42,0.08); }
+  .canyon-btn.active::before { opacity: 1; }
+
+  .canyon-btn .canyon-name { font-weight: 700; display: block; margin-bottom: 0.25rem; }
+  .canyon-btn .canyon-depth { font-size: 0.6rem; color: inherit; opacity: 0.6; }
+
+  /* Section labels */
+  .section-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--amber);
+    border-bottom: 1px solid var(--amber-dim);
+    padding-bottom: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Groove canvas */
+  .groove-panel {
+    background: var(--surface);
+    border: 1px solid var(--amber-dim);
+    padding: 1.5rem;
+    position: relative;
+  }
+
+  .groove-panel .panel-label {
+    position: absolute;
+    top: 0.75rem; right: 1rem;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: var(--amber-dim);
+    text-transform: uppercase;
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    image-rendering: crisp-edges;
+  }
+
+  #grooveCanvas { height: 200px; }
+  #waveCanvas { height: 120px; }
+  #spectrumCanvas { height: 100px; }
+
+  /* Controls */
+  .controls-row {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    padding: 0.6rem 1.8rem;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: transparent;
+  }
+
+  .btn-primary { border-color: var(--amber); color: var(--amber); }
+  .btn-primary:hover { background: var(--amber); color: var(--bg); }
+  .btn-secondary { border-color: var(--cream-dim); color: var(--cream-dim); }
+  .btn-secondary:hover { border-color: var(--cream); color: var(--cream); }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* Sliders */
+  .param-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .param-block label {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.4rem;
+  }
+
+  .param-block .param-val {
+    float: right;
+    color: var(--cream);
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 2px;
+    background: var(--amber-dim);
+    outline: none;
+    margin-top: 0.5rem;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px; height: 12px;
+    background: var(--amber);
+    border-radius: 0;
+    cursor: pointer;
+  }
+
+  select {
+    background: var(--groove);
+    border: 1px solid var(--amber-dim);
+    color: var(--cream);
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.75rem;
+    cursor: pointer;
+    outline: none;
+  }
+
+  /* Status */
+  .status-bar {
+    display: flex;
+    gap: 2rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--cream-dim);
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--groove);
+    flex-wrap: wrap;
+  }
+
+  .status-item span { color: var(--amber); }
+
+  /* Playhead */
+  #playheadIndicator {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: var(--amber);
+    opacity: 0;
+    pointer-events: none;
+    transition: left 0.05s linear;
+    box-shadow: 0 0 6px var(--amber);
+  }
+
+  /* Annotation */
+  .annotation {
+    font-size: 0.65rem;
+    color: var(--cream-dim);
+    line-height: 1.7;
+    max-width: 700px;
+    padding: 1rem 1.25rem;
+    border-left: 2px solid var(--amber-dim);
+    background: var(--groove);
+  }
+
+  .annotation strong { color: var(--cream); }
+
+  .loading-text {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    text-transform: uppercase;
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .channel-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    color: var(--cream-dim);
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-block">
+    <h1>Canyon<br>Groove</h1>
+    <p>Terrain as Waveform &mdash; Spatial Sonification Prototype</p>
+  </div>
+  <div class="header-meta">
+    <div>METHOD // Elevation &rarr; Audio</div>
+    <div>SOURCE // Open Elevation API</div>
+    <div>ENGINE // Web Audio API</div>
+    <div>CHANNELS // Stereo (L=West Wall / R=East Wall)</div>
+  </div>
+</header>
+
+<main>
+
+  <div>
+    <div class="section-label">01 &mdash; Select Canyon</div>
+    <div class="canyon-grid" id="canyonGrid"></div>
+  </div>
+
+  <div class="groove-panel" style="position:relative;">
+    <div class="panel-label">Groove Cross-Section (Elevation Profile)</div>
+    <canvas id="grooveCanvas"></canvas>
+    <div id="playheadIndicator"></div>
+    <div class="channel-labels">
+      <span>&larr; West Wall (L)</span>
+      <span>Floor</span>
+      <span>East Wall (R) &rarr;</span>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+    <div class="groove-panel">
+      <div class="panel-label">Waveform Output</div>
+      <canvas id="waveCanvas"></canvas>
+    </div>
+    <div class="groove-panel">
+      <div class="panel-label">Frequency Spectrum</div>
+      <canvas id="spectrumCanvas"></canvas>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">02 &mdash; Sonification Parameters</div>
+    <div class="param-grid">
+      <div class="param-block">
+        <label>Base Frequency <span class="param-val" id="freqVal">80 Hz</span></label>
+        <input type="range" id="baseFreq" min="40" max="400" value="80">
+      </div>
+      <div class="param-block">
+        <label>Pitch Depth <span class="param-val" id="depthVal">4.0x</span></label>
+        <input type="range" id="pitchDepth" min="1" max="12" value="4" step="0.5">
+      </div>
+      <div class="param-block">
+        <label>Playback Speed <span class="param-val" id="speedVal">1.0s / km</span></label>
+        <input type="range" id="speed" min="0.5" max="8" value="2" step="0.5">
+      </div>
+      <div class="param-block">
+        <label>Waveform <span class="param-val" id="waveVal">sine</span></label>
+        <select id="waveType">
+          <option value="sine">Sine</option>
+          <option value="triangle">Triangle</option>
+          <option value="sawtooth">Sawtooth</option>
+          <option value="square">Square</option>
+        </select>
+      </div>
+      <div class="param-block">
+        <label>Stereo Width <span class="param-val" id="stereoVal">80%</span></label>
+        <input type="range" id="stereoWidth" min="0" max="100" value="80">
+      </div>
+      <div class="param-block">
+        <label>Reverb (Canyon Decay) <span class="param-val" id="reverbVal">3.0s</span></label>
+        <input type="range" id="reverbTime" min="0.5" max="8" value="3" step="0.5">
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">03 &mdash; Playback</div>
+    <div class="controls-row">
+      <button class="btn btn-primary" id="btnLoad">Load Terrain</button>
+      <button class="btn btn-primary" id="btnPlay" disabled>Play Groove</button>
+      <button class="btn btn-secondary" id="btnStop" disabled>Stop</button>
+      <div id="loadStatus" class="loading-text" style="display:none;">Fetching elevation data&hellip;</div>
+    </div>
+  </div>
+
+  <div class="status-bar" id="statusBar">
+    <div class="status-item">Canyon: <span id="sCanyon">&mdash;</span></div>
+    <div class="status-item">Points: <span id="sPoints">&mdash;</span></div>
+    <div class="status-item">Min Elev: <span id="sMin">&mdash;</span></div>
+    <div class="status-item">Max Elev: <span id="sMax">&mdash;</span></div>
+    <div class="status-item">Relief: <span id="sRelief">&mdash;</span></div>
+    <div class="status-item">Duration: <span id="sDuration">&mdash;</span></div>
+  </div>
+
+  <div class="annotation">
+    <strong>How it works:</strong> A canyon cross-section is sampled as an elevation profile, west wall to east wall. 
+    Elevation maps to oscillator frequency (lower terrain = lower pitch), mirroring how vinyl groove depth modulates a stylus. 
+    The west wall drives the left channel; the east wall drives the right. The canyon floor is the groove bottom. 
+    Reverb decay time simulates acoustic resonance inside the canyon walls. 
+    Each canyon becomes a unique &ldquo;record&rdquo; &mdash; its geology encoded as sound.
+  </div>
+
+</main>
+
+<script>
+// ── Canyon definitions ─────────────────────────────────────────────────────
+// Each canyon: name, transect (lat/lon pairs west→east across the canyon)
+const CANYONS = [
+  {
+    id: 'grand',
+    name: 'Grand Canyon',
+    location: 'Arizona, USA',
+    depth: '1,857m',
+    // West rim → East rim transect at ~36.1°N
+    transect: { lat: 36.1069, lonW: -112.1129, lonE: -112.0500, points: 60 }
+  },
+  {
+    id: 'bryce',
+    name: 'Bryce Canyon',
+    location: 'Utah, USA',
+    depth: '~300m',
+    transect: { lat: 37.6283, lonW: -112.1900, lonE: -112.1500, points: 40 }
+  },
+  {
+    id: 'zion',
+    name: 'Zion Narrows',
+    location: 'Utah, USA',
+    depth: '~600m',
+    transect: { lat: 37.2983, lonW: -112.9550, lonE: -112.9350, points: 40 }
+  },
+  {
+    id: 'antelope',
+    name: 'Antelope Canyon',
+    location: 'Arizona, USA',
+    depth: '~40m',
+    transect: { lat: 36.8619, lonW: -111.3760, lonE: -111.3700, points: 30 }
+  },
+  {
+    id: 'colca',
+    name: 'Colca Canyon',
+    location: 'Peru',
+    depth: '3,270m',
+    transect: { lat: -15.5300, lonW: -71.8800, lonE: -71.8200, points: 60 }
+  },
+  {
+    id: 'fish',
+    name: 'Fish River Canyon',
+    location: 'Namibia',
+    depth: '549m',
+    transect: { lat: -27.7600, lonW: 17.5500, lonE: 17.6200, points: 50 }
+  },
+  {
+    id: 'yarlung',
+    name: 'Yarlung Tsangpo',
+    location: 'Tibet',
+    depth: '5,382m',
+    transect: { lat: 29.7600, lonW: 95.0200, lonE: 95.1200, points: 60 }
+  },
+  {
+    id: 'copper',
+    name: 'Copper Canyon',
+    location: 'Mexico',
+    depth: '1,879m',
+    transect: { lat: 27.3400, lonW: -107.7000, lonE: -107.6200, points: 50 }
+  }
+];
+
+// ── State ──────────────────────────────────────────────────────────────────
+let selectedCanyon = CANYONS[0];
+let elevationData = null;
+let audioCtx = null;
+let isPlaying = false;
+let playbackNodes = [];
+let animFrame = null;
+let analyserL, analyserR;
+
+// ── DOM refs ───────────────────────────────────────────────────────────────
+const grooveCanvas = document.getElementById('grooveCanvas');
+const waveCanvas = document.getElementById('waveCanvas');
+const spectrumCanvas = document.getElementById('spectrumCanvas');
+const grooveCtx = grooveCanvas.getContext('2d');
+const waveCtx2 = waveCanvas.getContext('2d');
+const specCtx = spectrumCanvas.getContext('2d');
+const btnLoad = document.getElementById('btnLoad');
+const btnPlay = document.getElementById('btnPlay');
+const btnStop = document.getElementById('btnStop');
+const loadStatus = document.getElementById('loadStatus');
+const playhead = document.getElementById('playheadIndicator');
+
+// ── Build canyon selector ──────────────────────────────────────────────────
+const grid = document.getElementById('canyonGrid');
+CANYONS.forEach(c => {
+  const btn = document.createElement('button');
+  btn.className = 'canyon-btn' + (c.id === selectedCanyon.id ? ' active' : '');
+  btn.innerHTML = `<span class="canyon-name">${c.name}</span><span class="canyon-depth">${c.location} &mdash; ${c.depth}</span>`;
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.canyon-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedCanyon = c;
+    elevationData = null;
+    btnPlay.disabled = true;
+    clearCanvases();
+  });
+  grid.appendChild(btn);
+});
+
+// ── Param controls ─────────────────────────────────────────────────────────
+const params = {
+  baseFreq: document.getElementById('baseFreq'),
+  pitchDepth: document.getElementById('pitchDepth'),
+  speed: document.getElementById('speed'),
+  waveType: document.getElementById('waveType'),
+  stereoWidth: document.getElementById('stereoWidth'),
+  reverbTime: document.getElementById('reverbTime'),
+};
+
+params.baseFreq.addEventListener('input', () => document.getElementById('freqVal').textContent = params.baseFreq.value + ' Hz');
+params.pitchDepth.addEventListener('input', () => document.getElementById('depthVal').textContent = parseFloat(params.pitchDepth.value).toFixed(1) + 'x');
+params.speed.addEventListener('input', () => document.getElementById('speedVal').textContent = params.speed.value + 's / km');
+params.waveType.addEventListener('change', () => document.getElementById('waveVal').textContent = params.waveType.value);
+params.stereoWidth.addEventListener('input', () => document.getElementById('stereoVal').textContent = params.stereoWidth.value + '%');
+params.reverbTime.addEventListener('input', () => document.getElementById('reverbVal').textContent = params.reverbTime.value + 's');
+
+// ── Canvas sizing ──────────────────────────────────────────────────────────
+function sizeCanvas(canvas) {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width - 48;
+  canvas.height = parseInt(canvas.style.height);
+}
+
+function sizeAllCanvases() {
+  [grooveCanvas, waveCanvas, spectrumCanvas].forEach(sizeCanvas);
+}
+
+window.addEventListener('resize', () => { sizeAllCanvases(); if (elevationData) drawGroove(); });
+sizeAllCanvases();
+
+// ── Fetch elevation ────────────────────────────────────────────────────────
+async function fetchElevation(canyon) {
+  const { lat, lonW, lonE, points } = canyon.transect;
+  const locs = [];
+  for (let i = 0; i < points; i++) {
+    const lon = lonW + (lonE - lonW) * (i / (points - 1));
+    locs.push({ latitude: lat, longitude: lon });
+  }
+
+  // Open Elevation API
+  const url = 'https://api.open-elevation.com/api/v1/lookup';
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ locations: locs })
+  });
+
+  if (!resp.ok) throw new Error('Elevation API error: ' + resp.status);
+  const data = await resp.json();
+  return data.results.map(r => r.elevation);
+}
+
+// ── Fallback: synthesize plausible canyon profile ──────────────────────────
+function syntheticProfile(canyon, points) {
+  // Create a U-shaped profile with geological noise
+  const profile = [];
+  const rimL = 800 + Math.random() * 400;
+  const rimR = 800 + Math.random() * 400;
+  const floor = 100 + Math.random() * 150;
+  const base = 500 + Math.random() * 500;
+
+  for (let i = 0; i < points; i++) {
+    const t = i / (points - 1); // 0 → 1
+    // U-shape kernel
+    const u = Math.pow(Math.abs(t * 2 - 1), 0.7);
+    // Lerp rim heights
+    const rim = rimL * (1 - t) + rimR * t;
+    // Canyon shape
+    let elev = base + floor + (rim - floor) * u;
+    // Add geological layering noise
+    elev += Math.sin(t * 23 + 1.2) * 18;
+    elev += Math.sin(t * 7.3 + 0.4) * 35;
+    elev += (Math.random() - 0.5) * 12;
+    profile.push(Math.max(0, elev));
+  }
+  return profile;
+}
+
+// ── Draw groove ────────────────────────────────────────────────────────────
+function clearCanvases() {
+  [grooveCanvas, waveCanvas, spectrumCanvas].forEach(c => {
+    const ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, c.width, c.height);
+  });
+  playhead.style.opacity = '0';
+}
+
+function drawGroove() {
+  if (!elevationData) return;
+  const w = grooveCanvas.width, h = grooveCanvas.height;
+  const elev = elevationData;
+  const minE = Math.min(...elev), maxE = Math.max(...elev);
+  const range = maxE - minE || 1;
+
+  grooveCtx.clearRect(0, 0, w, h);
+
+  // Background grid
+  grooveCtx.strokeStyle = 'rgba(200,146,42,0.06)';
+  grooveCtx.lineWidth = 1;
+  for (let x = 0; x < w; x += 60) { grooveCtx.beginPath(); grooveCtx.moveTo(x, 0); grooveCtx.lineTo(x, h); grooveCtx.stroke(); }
+  for (let y = 0; y < h; y += 40) { grooveCtx.beginPath(); grooveCtx.moveTo(0, y); grooveCtx.lineTo(w, y); grooveCtx.stroke(); }
+
+  // Build groove path (inverted: low elev = bottom of groove)
+  const pts = elev.map((e, i) => ({
+    x: (i / (elev.length - 1)) * w,
+    y: h - ((e - minE) / range) * (h - 20) - 10
+  }));
+
+  // Fill under curve (groove body)
+  grooveCtx.beginPath();
+  grooveCtx.moveTo(0, h);
+  pts.forEach(p => grooveCtx.lineTo(p.x, p.y));
+  grooveCtx.lineTo(w, h);
+  grooveCtx.closePath();
+  const grad = grooveCtx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, 'rgba(200,146,42,0.05)');
+  grad.addColorStop(1, 'rgba(200,146,42,0.18)');
+  grooveCtx.fillStyle = grad;
+  grooveCtx.fill();
+
+  // Groove wall line
+  grooveCtx.beginPath();
+  pts.forEach((p, i) => i === 0 ? grooveCtx.moveTo(p.x, p.y) : grooveCtx.lineTo(p.x, p.y));
+  grooveCtx.strokeStyle = '#c8922a';
+  grooveCtx.lineWidth = 1.5;
+  grooveCtx.stroke();
+
+  // Needle indicator (center marker)
+  const mid = Math.floor(elev.length / 2);
+  const mp = pts[mid];
+  grooveCtx.beginPath();
+  grooveCtx.moveTo(mp.x, 0);
+  grooveCtx.lineTo(mp.x, mp.y - 8);
+  grooveCtx.strokeStyle = 'rgba(200,146,42,0.4)';
+  grooveCtx.lineWidth = 1;
+  grooveCtx.setLineDash([4, 4]);
+  grooveCtx.stroke();
+  grooveCtx.setLineDash([]);
+
+  grooveCtx.fillStyle = '#c8922a';
+  grooveCtx.font = '9px Courier Prime';
+  grooveCtx.letterSpacing = '0.1em';
+  grooveCtx.fillText('NEEDLE', mp.x - 22, 10);
+}
+
+// ── Audio engine ───────────────────────────────────────────────────────────
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function buildReverb(ctx, decayTime) {
+  const convolver = ctx.createConvolver();
+  const sr = ctx.sampleRate;
+  const len = sr * decayTime;
+  const buf = ctx.createBuffer(2, len, sr);
+  for (let ch = 0; ch < 2; ch++) {
+    const data = buf.getChannelData(ch);
+    for (let i = 0; i < len; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.5);
+    }
+  }
+  convolver.buffer = buf;
+  return convolver;
+}
+
+function stopAll() {
+  playbackNodes.forEach(n => { try { n.stop(); n.disconnect(); } catch(e){} });
+  playbackNodes = [];
+  isPlaying = false;
+  cancelAnimationFrame(animFrame);
+  btnPlay.disabled = false;
+  btnStop.disabled = true;
+  playhead.style.opacity = '0';
+}
+
+async function playSonification() {
+  if (isPlaying) stopAll();
+  const ctx = getAudioCtx();
+  if (ctx.state === 'suspended') await ctx.resume();
+
+  const elev = elevationData;
+  const n = elev.length;
+  const minE = Math.min(...elev), maxE = Math.max(...elev);
+  const range = maxE - minE || 1;
+
+  const baseF = parseFloat(params.baseFreq.value);
+  const depth = parseFloat(params.pitchDepth.value);
+  const secPerKm = parseFloat(params.speed.value);
+  const waveT = params.waveType.value;
+  const stereo = parseFloat(params.stereoWidth.value) / 100;
+  const revTime = parseFloat(params.reverbTime.value);
+
+  // Estimate km from transect
+  const canyon = selectedCanyon.transect;
+  const kmTotal = Math.abs(canyon.lonE - canyon.lonW) * 111 * Math.cos(canyon.lat * Math.PI / 180);
+  const totalDur = kmTotal * secPerKm;
+  const stepDur = totalDur / n;
+
+  // Splitter / merger for stereo
+  const merger = ctx.createChannelMerger(2);
+  const masterGain = ctx.createGain();
+  masterGain.gain.value = 0.5;
+
+  // Analysers
+  analyserL = ctx.createAnalyser(); analyserL.fftSize = 256;
+  analyserR = ctx.createAnalyser(); analyserR.fftSize = 256;
+
+  // Reverb
+  const reverb = buildReverb(ctx, revTime);
+  const reverbGain = ctx.createGain(); reverbGain.gain.value = 0.35;
+
+  merger.connect(masterGain);
+  masterGain.connect(reverb);
+  reverb.connect(reverbGain);
+  reverbGain.connect(ctx.destination);
+  masterGain.connect(ctx.destination);
+  masterGain.connect(analyserL);
+  masterGain.connect(analyserR);
+  playbackNodes.push(masterGain, reverb, reverbGain, merger);
+
+  const startTime = ctx.currentTime + 0.05;
+
+  for (let i = 0; i < n; i++) {
+    const t = startTime + i * stepDur;
+    const norm = (elev[i] - minE) / range; // 0=floor, 1=rim
+
+    // Pitch: low terrain = low pitch (groove floor = bass)
+    const freq = baseF * (1 + norm * (depth - 1));
+
+    // Stereo: left = west side (i near 0), right = east side (i near n)
+    const panVal = ((i / (n - 1)) * 2 - 1) * stereo; // -1 to +1
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const panner = ctx.createStereoPanner();
+
+    osc.type = waveT;
+    osc.frequency.setValueAtTime(freq, t);
+    if (i < n - 1) {
+      const nextNorm = (elev[i + 1] - minE) / range;
+      const nextFreq = baseF * (1 + nextNorm * (depth - 1));
+      osc.frequency.linearRampToValueAtTime(nextFreq, t + stepDur);
+    }
+
+    gain.gain.setValueAtTime(0.001, t);
+    gain.gain.linearRampToValueAtTime(0.3, t + stepDur * 0.1);
+    gain.gain.setValueAtTime(0.3, t + stepDur * 0.85);
+    gain.gain.linearRampToValueAtTime(0.001, t + stepDur);
+
+    panner.pan.value = panVal;
+
+    osc.connect(gain);
+    gain.connect(panner);
+    panner.connect(merger, 0, 0);
+    panner.connect(merger, 0, 1);
+
+    osc.start(t);
+    osc.stop(t + stepDur + 0.02);
+    playbackNodes.push(osc, gain, panner);
+  }
+
+  isPlaying = true;
+  btnPlay.disabled = true;
+  btnStop.disabled = false;
+
+  // Animate playhead
+  const groovePanel = grooveCanvas.parentElement;
+  const panelRect = groovePanel.getBoundingClientRect();
+  playhead.style.opacity = '1';
+
+  const animStart = performance.now();
+  const totalMs = totalDur * 1000;
+
+  function animatePlayhead() {
+    const elapsed = performance.now() - animStart;
+    const progress = Math.min(elapsed / totalMs, 1);
+    const px = progress * grooveCanvas.width;
+    playhead.style.left = (px + 24) + 'px'; // offset for padding
+
+    if (progress < 1 && isPlaying) {
+      animFrame = requestAnimationFrame(animatePlayhead);
+    } else if (progress >= 1) {
+      setTimeout(() => {
+        stopAll();
+        playhead.style.opacity = '0';
+      }, 500);
+    }
+  }
+  animFrame = requestAnimationFrame(animatePlayhead);
+
+  // Draw oscilloscope
+  drawVisualizers();
+}
+
+function drawVisualizers() {
+  if (!isPlaying || !analyserL) return;
+
+  const wW = waveCanvas.width, wH = waveCanvas.height;
+  const sW = spectrumCanvas.width, sH = spectrumCanvas.height;
+
+  // Waveform
+  const bufLen = analyserL.frequencyBinCount;
+  const timeData = new Uint8Array(bufLen);
+  analyserL.getByteTimeDomainData(timeData);
+
+  waveCtx2.fillStyle = '#111110';
+  waveCtx2.fillRect(0, 0, wW, wH);
+  waveCtx2.strokeStyle = '#c8922a';
+  waveCtx2.lineWidth = 1.5;
+  waveCtx2.beginPath();
+  timeData.forEach((v, i) => {
+    const x = (i / bufLen) * wW;
+    const y = (v / 256) * wH;
+    i === 0 ? waveCtx2.moveTo(x, y) : waveCtx2.lineTo(x, y);
+  });
+  waveCtx2.stroke();
+
+  // Spectrum
+  const freqData = new Uint8Array(bufLen);
+  analyserL.getByteFrequencyData(freqData);
+
+  specCtx.fillStyle = '#111110';
+  specCtx.fillRect(0, 0, sW, sH);
+
+  const barW = sW / bufLen * 2.5;
+  freqData.forEach((v, i) => {
+    if (i > bufLen / 2) return;
+    const barH = (v / 255) * sH;
+    const x = (i / (bufLen / 2)) * sW;
+    const alpha = 0.4 + (v / 255) * 0.6;
+    specCtx.fillStyle = `rgba(200,146,42,${alpha})`;
+    specCtx.fillRect(x, sH - barH, barW, barH);
+  });
+
+  animFrame = requestAnimationFrame(drawVisualizers);
+}
+
+// ── Load terrain ───────────────────────────────────────────────────────────
+btnLoad.addEventListener('click', async () => {
+  loadStatus.style.display = 'block';
+  btnLoad.disabled = true;
+  clearCanvases();
+
+  try {
+    elevationData = await fetchElevation(selectedCanyon);
+  } catch (err) {
+    console.warn('Elevation API unavailable, using synthetic profile:', err);
+    elevationData = syntheticProfile(selectedCanyon, selectedCanyon.transect.points);
+  }
+
+  loadStatus.style.display = 'none';
+  btnLoad.disabled = false;
+  btnPlay.disabled = false;
+
+  // Update status
+  const minE = Math.min(...elevationData), maxE = Math.max(...elevationData);
+  const canyon = selectedCanyon.transect;
+  const km = Math.abs(canyon.lonE - canyon.lonW) * 111 * Math.cos(canyon.lat * Math.PI / 180);
+  const dur = (km * parseFloat(params.speed.value)).toFixed(1);
+
+  document.getElementById('sCanyon').textContent = selectedCanyon.name;
+  document.getElementById('sPoints').textContent = elevationData.length;
+  document.getElementById('sMin').textContent = Math.round(minE) + 'm';
+  document.getElementById('sMax').textContent = Math.round(maxE) + 'm';
+  document.getElementById('sRelief').textContent = Math.round(maxE - minE) + 'm';
+  document.getElementById('sDuration').textContent = dur + 's';
+
+  drawGroove();
+});
+
+btnPlay.addEventListener('click', playSonification);
+btnStop.addEventListener('click', stopAll);
+
+// Init
+clearCanvases();
+</script>
+</body>
+</html>
