@@ -947,7 +947,31 @@ const Voices = {
 
 /* --------------------------------------------------------------- transport */
 const audio = { ctx: null, eng: null, playing: false, timer: null };
+/* iOS files a bare AudioContext under "ambient" sound, which the silent switch
+   mutes. Music apps use "playback", which plays through it, and that is what a
+   person pressing Play expects. Safari 16.4+ lets a page ask for it directly;
+   older iOS gets there by playing a silent audio element on the same tap. */
+let iosKeepAlive = null;
+function isIOS() { return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)); }
+function silentWavUrl() {
+  const sr = 8000, n = sr / 2, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+  const w = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true);
+  v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true);
+  v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
+  return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+}
+function claimPlaybackAudio() {
+  try { if (navigator.audioSession) { navigator.audioSession.type = 'playback'; return 'session'; } } catch (e) { /* fall through */ }
+  if (!isIOS()) return 'none';
+  if (!iosKeepAlive) { iosKeepAlive = new Audio(silentWavUrl()); iosKeepAlive.loop = true; iosKeepAlive.setAttribute('playsinline', ''); }
+  const p = iosKeepAlive.play(); if (p && p.catch) p.catch(() => {});
+  return 'element';
+}
+function releasePlaybackAudio() { if (iosKeepAlive) iosKeepAlive.pause(); }
+
 function play() {
+  claimPlaybackAudio();            // must run inside the tap, before any audio starts
   if (!audio.ctx) audio.ctx = new AC();
   if (audio.ctx.state === 'suspended') audio.ctx.resume();
   if (audio.eng) audio.eng.dispose();
@@ -962,6 +986,7 @@ function play() {
 function stop(quiet) {
   if (!audio.playing) return;
   audio.eng.dispose(); audio.eng = null;
+  releasePlaybackAudio();
   clearInterval(audio.timer); audio.timer = null;
   audio.playing = false;
   ui.playing(false);
