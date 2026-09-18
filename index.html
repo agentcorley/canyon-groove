@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=4">
+<link rel="stylesheet" href="assets/site.css?v=5">
 <style>
   :root {
     --bg: #0a0a08; --surface: #111110; --groove: #1a1a17; --edge: #2a2820;
@@ -222,7 +222,7 @@
   .credits a:hover { color: var(--amber); }
 
   /* Info panel (inline, never a modal: it has to behave inside an iframe) */
-  .info-panel { margin-top: .6rem; border: 1px solid var(--amber-dim); background: var(--surface); padding: 1rem 1.1rem 1.1rem; font-size: .82rem; line-height: 1.65; }
+  .info-panel { scroll-margin-top: 1.2rem; margin-bottom: .6rem; border: 1px solid var(--amber-dim); background: var(--surface); padding: 1rem 1.1rem 1.1rem; font-size: .82rem; line-height: 1.65; }
   .info-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: .6rem; }
   .info-head h3 { font-family: var(--display); font-size: 1.8rem; letter-spacing: .08em; font-weight: 400; color: var(--amber); line-height: 1; margin-bottom: .2rem; }
   .info-head .sub { font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--cream-dim); }
@@ -299,14 +299,13 @@
     <div>Loops <b id="rLoops"></b></div>
     <div>Echo <b id="rEcho"></b></div>
     <div>Source <b id="rSource"></b></div>
-    <div>Variation <b><button class="link" id="btnRecut" type="button" title="Same canyon, a new variation">Make a new one</button></b></div>
   </div>
 </section>
 
 <section aria-labelledby="lbl-canyon">
   <div class="label"><h2 id="lbl-canyon"><span class="num">01</span>Choose a canyon</h2><span class="sub">real elevation and topography <button class="qbtn" id="methodBtn" type="button" aria-label="How the topography was measured" title="How the topography was measured">?</button></span></div>
-  <div class="canyon-grid" id="canyonGrid" role="group" aria-label="Canyons"></div>
   <div class="info-panel" id="infoPanel" hidden aria-live="polite"></div>
+  <div class="canyon-grid" id="canyonGrid" role="group" aria-label="Canyons"></div>
 </section>
 
 <section aria-labelledby="lbl-voices">
@@ -348,7 +347,7 @@
     <input type="hidden" name="metadata__song-name" id="mCutName" value="">
     <input type="hidden" name="metadata__song-url" id="mCutUrl" value="">
     <input type="hidden" name="metadata__canyon" id="mCanyon" value="">
-    <div class="keep-text"><b>Keep this song.</b> Saved under your name with <em>The Catalog</em>, my weekly newsletter.</div>
+    <div class="keep-text"><b>Save your song.</b> I’ll compile the set of submitted songs, credited to you, and share it in <em>The Catalog</em>, my weekly newsletter. Just add your email here.</div>
     <input type="email" name="email" placeholder="you@example.com" required autocomplete="email" aria-label="Email">
     <button class="btn btn-secondary" type="submit">Save</button>
   </form>
@@ -383,7 +382,7 @@
   <a href="#top" id="dockTop">Top</a>
 </div>
 
-<script src="assets/site.js?v=4"></script>
+<script src="assets/site.js?v=5"></script>
 <script>
 'use strict';
 
@@ -1421,7 +1420,6 @@ function boot() {
   $('btnPass').addEventListener('click', passNeedle);
   $('cutName').addEventListener('change', () => { state.cut.name = cleanName($('cutName').value, 40); writeHash(); ui.cutInfo(); });
   $('byName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); passNeedle(); } });
-  $('btnRecut').addEventListener('click', () => { state.seed = (Math.random() * 1e9) >>> 0; writeHash(); restartIfPlaying(); ui.hint(); });
   $('btnCopy').addEventListener('click', () => copyLink());
   $('methodBtn').addEventListener('click', e => methodDialog(e.currentTarget));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfo(); });
@@ -1445,8 +1443,8 @@ function boot() {
       if (j.ok) {
         copyLink(true);
         setStatus(j.state === 'new'
-          ? '<span class="ok">Saved “' + esc(name) + '”.</span> Check your inbox for a confirmation from The Catalog, then you’re in. Link copied.'
-          : '<span class="ok">Saved “' + esc(name) + '”</span> to your existing subscription. Link copied.');
+          ? '<span class="ok">Saved “' + esc(name) + '”.</span> It’s in the set for an upcoming issue. Check your inbox to confirm your subscription to The Catalog.'
+          : '<span class="ok">Saved “' + esc(name) + '”.</span> It’s in the set for an upcoming issue of The Catalog.');
         form.reset();
       } else setStatus('<span class="warn">' + esc(j.error || 'Could not save.') + '</span>');
     } catch (err) { /* route unavailable: fall through to the plain form */ }

@@ -69,15 +69,23 @@
        measuring the document would grow the frame forever. */
     const send = () => { const cs = getComputedStyle(document.body); const h = Math.ceil(document.body.getBoundingClientRect().height + (parseFloat(cs.marginTop) || 0) + (parseFloat(cs.marginBottom) || 0)); if (h > 0 && Math.abs(h - last) > 1) { last = h; postToParent({ type: 'cg-height', h }); } };
     new ResizeObserver(send).observe(document.body);
+    postToParent({ type: 'cg-hello' });
     window.addEventListener('load', send); setInterval(send, 1500); send();
   }
-  /* Bring an element into view. Inside a frame the app cannot scroll the host page,
-     so it sends the element's position and lets the host decide. */
+  /* Bring an element into view. A host page running the current embed block
+     answers our hello and scrolls precisely on request. Older blocks never
+     answer, so the app falls back to the browser's own scrollIntoView, which
+     scrolls the host too after a click. */
+  let hostScrolls = false;
+  window.addEventListener('message', e => { if (e.source === window.parent && e.data && e.data.type === 'cg-host') hostScrolls = !!e.data.scroll; });
   function reveal(el, margin) {
     if (!el) return;
-    if (window.self === window.top) { el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
-    const r = el.getBoundingClientRect();
-    postToParent({ type: 'cg-scroll', top: r.top + window.scrollY, height: r.height, margin: margin || 24 });
+    if (window.self === window.top || !hostScrolls) { el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+    const send = () => { const r = el.getBoundingClientRect(); postToParent({ type: 'cg-scroll', top: r.top + window.scrollY, height: r.height, margin: margin || 24 }); };
+    send();
+    // The frame grows as the panel opens and the host may shift its scroll to
+    // compensate; a second request after it settles corrects any drift.
+    setTimeout(send, 450);
   }
   function syncHash() {
     if (window.self === window.top) return;
