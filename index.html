@@ -962,11 +962,16 @@ function silentWavUrl() {
   return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
 }
 function claimPlaybackAudio() {
-  try { if (navigator.audioSession) { navigator.audioSession.type = 'playback'; return 'session'; } } catch (e) { /* fall through */ }
-  if (!isIOS()) return 'none';
-  if (!iosKeepAlive) { iosKeepAlive = new Audio(silentWavUrl()); iosKeepAlive.loop = true; iosKeepAlive.setAttribute('playsinline', ''); }
+  // Ask for playback, then on iOS also start the silent element regardless.
+  // Inside a frame from another site (the WordPress embed) the Audio Session
+  // request may not reach the audio session iOS actually uses, but a playing
+  // media element always switches it, the same way a YouTube embed does.
+  let how = 'none';
+  try { if (navigator.audioSession) { navigator.audioSession.type = 'playback'; how = 'session'; } } catch (e) { /* keep going */ }
+  if (!isIOS()) return how;
+  if (!iosKeepAlive) { iosKeepAlive = new Audio(silentWavUrl()); iosKeepAlive.loop = true; iosKeepAlive.setAttribute('playsinline', ''); iosKeepAlive.volume = 1; }
   const p = iosKeepAlive.play(); if (p && p.catch) p.catch(() => {});
-  return 'element';
+  return how === 'session' ? 'session+element' : 'element';
 }
 function releasePlaybackAudio() { if (iosKeepAlive) iosKeepAlive.pause(); }
 
