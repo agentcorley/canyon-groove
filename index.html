@@ -133,13 +133,12 @@
   .pad:hover { border-color: var(--amber-dim); }
   .pad.on { border-color: var(--pad-color, var(--amber)); background: var(--amber-glow); }
   .pad.tuning { box-shadow: 0 0 0 1px var(--pad-color, var(--amber)) inset; }
-  .pad-main { background: transparent; border: 0; color: var(--cream-dim); text-align: left; cursor: pointer; padding: .8rem .6rem .75rem .9rem; display: grid; grid-template-columns: 12px 1fr; gap: .1rem .7rem; align-items: center; }
+  .pad-main { background: transparent; border: 0; color: var(--cream-dim); text-align: left; cursor: pointer; padding: .8rem .6rem .75rem .9rem; display: grid; grid-template-columns: 12px 1fr; gap: .1rem .7rem; align-items: center; min-height: 58px; }
   .pad.on .pad-main { color: var(--cream); }
-  .pad .led { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); grid-row: span 3; align-self: start; margin-top: .35rem; transition: background .15s, box-shadow .15s; }
+  .pad .led { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); grid-row: span 2; align-self: start; margin-top: .35rem; transition: background .15s, box-shadow .15s; }
   .pad.on .led { background: var(--pad-color, var(--amber)); box-shadow: 0 0 10px var(--pad-color, var(--amber)); }
   .pad .pad-name { font-weight: 700; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; }
   .pad .pad-inst { font-size: .68rem; color: var(--amber); letter-spacing: .08em; }
-  .pad .pad-hint { font-size: .66rem; opacity: .7; line-height: 1.4; }
   .pad-tune { background: transparent; border: 0; border-left: 1px solid var(--edge); color: var(--faint); cursor: pointer; padding: 0 .6rem; min-width: 48px; display: grid; place-items: center; }
   .pad-tune svg { width: 24px; height: 24px; display: block; transition: transform .25s, color .15s; }
   .pad-tune:hover, .pad.tuning .pad-tune { color: var(--amber); }
@@ -161,7 +160,6 @@
   .vp-sliders { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: .9rem 1.4rem; }
   .slider label { display: flex; justify-content: space-between; font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--amber); margin-bottom: .35rem; }
   .slider label span { color: var(--cream); letter-spacing: 0; }
-  .slider small { display: block; font-size: .62rem; color: var(--faint); margin-top: .3rem; line-height: 1.4; }
   input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 2px; background: var(--amber-dim); outline: none; margin: .6rem 0; }
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--amber); border-radius: 0; cursor: pointer; border: 0; }
   input[type=range]::-moz-range-thumb { width: 18px; height: 18px; background: var(--amber); border-radius: 0; cursor: pointer; border: 0; }
@@ -211,7 +209,9 @@
   .origin figcaption a { color: var(--cream-dim); text-decoration: none; border-bottom: 1px solid var(--edge); }
   .origin figcaption a:hover { color: var(--amber); }
   .about { font-size: .82rem; color: var(--cream-dim); line-height: 1.7; max-width: 66ch; border-left: 2px solid var(--amber-dim); padding: .2rem 0 .2rem 1.1rem; }
-  .about p + p { margin-top: .8rem; }
+  .about p + p { margin-top: .7rem; }
+  .about h3 { font-family: var(--display); font-weight: 400; font-size: 1.35rem; letter-spacing: .07em; color: var(--amber); line-height: 1; margin: 1.5rem 0 .5rem; }
+  .about h3:first-child { margin-top: 0; }
   .about strong { color: var(--cream); font-weight: 400; }
   .about em { color: var(--cream); font-style: italic; }
   .subscribe-cta { text-align: center; padding: 1.4rem 0 .4rem; }
@@ -229,6 +229,7 @@
   .info-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .6rem 2rem; align-items: start; }
   .info-body p { color: var(--cream-dim); margin-bottom: .7rem; max-width: 66ch; }
   .info-body p strong { color: var(--cream); font-weight: 400; }
+  .info-body .line-facts { font-size: .72rem; color: var(--faint); letter-spacing: .04em; }
   .info-actions { display: flex; flex-direction: column; gap: .5rem; align-items: stretch; min-width: 200px; }
   .info-actions .btn { justify-content: center; font-size: 1rem; }
   .info-actions .more { text-align: center; font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--cream); text-decoration: none; border: 1px solid var(--edge); padding: .55rem .8rem; }
@@ -267,7 +268,7 @@
 <header>
   <div>
     <h1>Canyon<br>Groove</h1>
-    <p class="tagline">Every canyon has a unique sound</p>
+    <p class="tagline">Generate music with canyons</p>
   </div>
   <div class="disc-wrap">
     <canvas id="disc" width="256" height="256" aria-hidden="true"></canvas>
@@ -279,7 +280,6 @@
   <div class="now">
     <button class="play pulse" id="btnPlay" type="button" aria-pressed="false" aria-label="Play"><svg class="ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" fill="currentColor"/></svg><svg class="ic-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5h4.5v15H6zm7.5 0H18v15h-4.5z" fill="currentColor"/></svg></button>
     <div class="now-text">
-      <div class="kicker" id="nowKicker">Ready to play</div>
       <h2 id="canyonName">&nbsp;</h2>
       <div class="where" id="canyonPlace"></div>
       <div class="cut-title" id="cutTitle" hidden></div>
@@ -331,7 +331,7 @@
     <input id="byName" maxlength="24" placeholder="Your name" autocomplete="name" aria-label="Your name">
     <button class="btn btn-primary" id="btnPass" type="button">Share</button>
   </div>
-  <p class="share-hint" id="passHint">Your link and a card, with your name on it.</p>
+  <p class="share-hint" id="passHint">Send a link to your song.</p>
   <div class="status" id="status"></div>
   <div class="progress" id="progress"><i></i></div>
   <div class="share-more">
@@ -359,9 +359,15 @@
     <figcaption>A stylus in a record groove under an electron microscope. Posted to <a href="https://www.reddit.com/r/vinyl/comments/zuapb3/a_close_up_picture_of_a_record_groove_and_needle/" target="_blank" rel="noopener">r/vinyl</a> by Total_Doofuss484, 2022.</figcaption>
   </figure>
   <div class="about">
-    <p><strong>Where this came from.</strong> When I saw this photograph, where the magnified microscopic record player needle sits between the vinyl record’s tracks I thought the groove walls looked like canyon walls. They look ridged and layered, and the shape of those walls is the music. I wondered whether it works the other way round. Could you take a real canyon, treat the cross-section as a groove, and use AI to drag a needle through the canyon grooves?</p>
-    <p><strong>How it plays.</strong> Each canyon is a real elevation transect, rim to rim, 100 samples. The floor elevation picks the key. The canyon’s symmetry picks the mood: balanced walls play bright, lopsided ones play dark. Every voice has its own stylus crossing the profile at its own speed, and the speeds never divide evenly, so the voices drift in and out of phase the way Brian Eno’s tape loops did. Notes ring when a stylus crosses a contour line, so steep walls chime and flat floors fall silent. Echo scales with depth. Deeper canyon, longer tail.</p>
-    <p><strong>Make it yours.</strong> Every voice has a handful of instruments and its own level, attack, decay, tone, grit, echo, and delay. The URL carries all of it, plus the canyon, key, mood, and seed. Copy the link and someone else hears the same song. Export two minutes and you get an MP3.</p>
+    <h3>Where this came from</h3>
+    <p>When I saw this photograph, where the magnified microscopic record player needle sits between the vinyl record’s tracks I thought the groove walls looked like canyon walls. They look ridged and layered, and the shape of those walls is the music. I wondered whether it works the other way round. Could you take a real canyon, treat the cross-section as a groove, and use AI to drag a needle through the canyon grooves?</p>
+
+    <h3>How it works</h3>
+    <p>Each canyon here is a real elevation profile, rim to rim, measured at 100 points. The floor sets the key. The shape of the walls sets the mood. The width sets how long one pass takes, and the depth sets the echo.</p>
+    <p>Every voice crosses the profile at its own speed, and no two speeds line up. They fall in and out of step, so the music keeps changing. Two minutes in you have heard a piece. Twenty minutes in it still has not repeated.</p>
+
+    <h3>Making your own</h3>
+    <p>Switch voices on and off, change their instruments, and adjust them while the music plays. The link holds everything, so anyone you send it to hears the same song.</p>
   </div>
 </section>
 
@@ -370,7 +376,7 @@
   <p>Ideas, tools, and the people building tomorrow’s experiences. Weekly, from Jonathan Corley.</p>
 </section>
 
-<p class="credits">Elevation data: <a href="https://open-meteo.com/en/docs/elevation-api" target="_blank" rel="noopener">Open-Meteo Elevation API</a> (Copernicus DEM GLO-90), with one transect from <a href="https://open-elevation.com" target="_blank" rel="noopener">Open-Elevation</a> (SRTM). Sampled September 2026. Sound: Web Audio API, no samples, everything synthesized in the browser. MP3 encoding by <a href="https://github.com/zhuker/lamejs" target="_blank" rel="noopener">lamejs</a>. Source on <a id="repoLink" href="https://github.com/agentcorley/canyon-groove" target="_blank" rel="noopener">GitHub</a>.</p>
+<p class="credits">Elevation from the <a href="https://open-meteo.com/en/docs/elevation-api" target="_blank" rel="noopener">Open-Meteo</a> and <a href="https://open-elevation.com" target="_blank" rel="noopener">Open-Elevation</a> APIs. Every sound is made in the browser, with no recordings. MP3s by <a href="https://github.com/zhuker/lamejs" target="_blank" rel="noopener">lamejs</a>. Code on <a id="repoLink" href="https://github.com/agentcorley/canyon-groove" target="_blank" rel="noopener">GitHub</a>.</p>
 
 <footer id="labFooter"></footer>
 
@@ -471,11 +477,11 @@ const CANYONS = [
 ];
 
 const LAYERS = {
-  bedrock:  { label: 'Bedrock',  hint: 'a drone rooted in the canyon floor',                color: '#c8922a', continuous: true },
-  strata:   { label: 'Strata',   hint: 'slow chords read from the rock layers',             color: '#e8c17a' },
-  contours: { label: 'Contours', hint: 'one note each time a stylus crosses a contour line', color: '#f4ead2' },
-  wind:     { label: 'Wind',     hint: 'air that follows the terrain',                      color: '#8fa9b8', continuous: true },
-  river:    { label: 'River',    hint: 'sparse notes when the needle reaches the floor',    color: '#63b7cf' },
+  bedrock:  { label: 'Bedrock',  color: '#c8922a', continuous: true },
+  strata:   { label: 'Strata',   color: '#e8c17a' },
+  contours: { label: 'Contours', color: '#f4ead2' },
+  wind:     { label: 'Wind',     color: '#8fa9b8', continuous: true },
+  river:    { label: 'River',    color: '#63b7cf' },
 };
 const ORDER = ['bedrock', 'strata', 'contours', 'wind', 'river'];
 const DEFAULT_LAYERS = ['bedrock', 'strata', 'contours', 'wind'];
@@ -487,12 +493,12 @@ const INSTRUMENTS = {
   river:    { pluck: 'Pluck', drops: 'Drops', harp: 'Harp' },
 };
 const PARAMS = {
-  level:  { label: 'Level',  def: 80, hint: 'how loud this voice sits in the mix' },
-  attack: { label: 'Attack', def: 50, hint: 'soft swell or hard edge on every note' },
-  decay:  { label: 'Decay',  def: 50, hint: 'how long each note hangs on', notes: true },
-  tone:   { label: 'Tone',   def: 75, hint: 'dark to bright' },
+  level:  { label: 'Level',  def: 80 },
+  attack: { label: 'Attack', def: 50 },
+  decay:  { label: 'Decay',  def: 50, notes: true },
+  tone:   { label: 'Tone',   def: 75 },
   grit:   { label: 'Grit',   def: 0,  hint: 'tape saturation into fuzz' },
-  echo:   { label: 'Echo',   def: 55, hint: 'how much of this voice goes into the canyon' },
+  echo:   { label: 'Echo',   def: 55 },
   delay:  { label: 'Delay',  def: 0,  hint: 'repeats, timed to the canyon’s loop' },
 };
 const MOODS = {
@@ -514,11 +520,10 @@ let IMAGES = [];
 const LAME_URL = 'https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.all.js';
 
 const METHOD_TEXT = [
-  ['The line', 'Each canyon is a straight line between two coordinates, chosen rim to rim through a well-known viewpoint, and sampled at 100 evenly spaced points. Every pair of coordinates is published in canyons.json so the line can be checked on any map.'],
-  ['The data', 'Elevations come from the Copernicus DEM GLO-90, a satellite-derived global elevation model on a 90-metre grid, served by the Open-Meteo Elevation API. One transect, Yarlung Tsangpo, came from Open-Elevation’s SRTM data after a rate limit.'],
-  ['How accurate', 'Copernicus GLO-90 carries a stated absolute vertical accuracy of under 4 metres at 90% confidence. The catch is the grid: a 90-metre cell averages the terrain inside it, so knife-edge rims and summits read lower than survey figures and narrow slots can vanish. Sample spacing along these lines runs from about 45 metres (Zion) to 430 metres (Indus). Treat every relief number here as a floor, not a ceiling.'],
-  ['What the music uses', 'Only the shape. Floor elevation picks the key, wall symmetry picks the mood, width sets the loop length, relief sets the echo and the contour spacing. Nothing is smoothed or invented between samples beyond straight-line interpolation.'],
-];
+  ['The line', 'A straight line between two coordinates, rim to rim, sampled at 100 points. Every pair of coordinates is in canyons.json, so you can check any line on a map.'],
+  ['The data', 'Elevations come from the Copernicus DEM GLO-90, a satellite model on a 90-metre grid, through the Open-Meteo API. Yarlung Tsangpo came from Open-Elevation.'],
+  ['The catch', 'A 90-metre cell averages whatever is inside it. Sharp rims read low and narrow slots disappear. The relief numbers here are a floor, not a ceiling.'],
+]
 
 /* ----------------------------------------------------------------- utils */
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -1209,12 +1214,12 @@ function infoShell(title, sub, body, actions, foot) {
 function canyonDialog(c, trigger) {
   const T = analyze(c);
   openInfo(infoShell(esc(c.name), esc(c.place) + ' &middot; ' + fmtM(T.relief) + ' relief &middot; ' + c.km.toFixed(1) + ' km line',
-    '<p>' + esc(c.about) + '</p><p><strong>The line.</strong> ' + esc(c.ends[0]) + ' to ' + esc(c.ends[1]) + ', floor at ' + fmtM(T.min) + ', high point ' + fmtM(T.max) + '. Contour lines every ' + T.contour + ' m, sample every ' + Math.round(T.stepM) + ' m.</p>',
+    '<p>' + esc(c.about) + '</p><p class="line-facts">' + esc(c.ends[0]) + ' to ' + esc(c.ends[1]) + ' &middot; floor ' + fmtM(T.min) + ' &middot; rim ' + fmtM(T.max) + ' &middot; contours every ' + T.contour + ' m</p>',
     '<button class="btn btn-primary" type="button" data-play="' + esc(c.id) + '">Play this canyon</button><a class="more" href="' + esc(outbound(c.source.url)) + '" target="_blank" rel="noopener">Learn more &nearr;</a>',
     'Source: ' + esc(c.source.label) + ' &middot; Terrain: ' + (c.src === 'open-elevation' ? 'SRTM via Open-Elevation' : 'Copernicus DEM GLO-90 via Open-Meteo') + ' &middot; ' + c.a[0].toFixed(4) + ', ' + c.a[1].toFixed(4) + ' &rarr; ' + c.b[0].toFixed(4) + ', ' + c.b[1].toFixed(4)), trigger);
 }
 function methodDialog(trigger) {
-  openInfo(infoShell('How the terrain was measured', 'and how far to trust it',
+  openInfo(infoShell('How this was measured', 'and how far to trust it',
     METHOD_TEXT.map(([h, p]) => '<p><strong>' + h + '.</strong> ' + p + '</p>').join(''),
     '<a class="more" href="canyons.json" target="_blank" rel="noopener">The dataset &nearr;</a><a class="more" href="' + outbound('https://open-meteo.com/en/docs/elevation-api') + '" target="_blank" rel="noopener">Learn more &nearr;</a>',
     'Source: Open-Meteo Elevation API, Copernicus DEM GLO-90 (ESA). Compiled for Canyon Groove, cumberlandcoast.com, September 2026.'), trigger);
@@ -1266,7 +1271,7 @@ const ui = {
     if (!el.children.length) {
       for (const k of ORDER) {
         const d = document.createElement('div'); d.className = 'pad'; d.dataset.key = k; d.style.setProperty('--pad-color', LAYERS[k].color);
-        d.innerHTML = '<button type="button" class="pad-main" aria-pressed="false"><span class="led" aria-hidden="true"></span><span class="pad-name">' + LAYERS[k].label + '</span><span class="pad-inst"></span><span class="pad-hint">' + LAYERS[k].hint + '</span></button>'
+        d.innerHTML = '<button type="button" class="pad-main" aria-pressed="false"><span class="led" aria-hidden="true"></span><span class="pad-name">' + LAYERS[k].label + '</span><span class="pad-inst"></span></button>'
           + '<button type="button" class="pad-tune" aria-expanded="false" title="Instrument and settings for ' + LAYERS[k].label + '"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 12l4.2-4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><path d="M4.6 17.5l1.3-.9M19.4 17.5l-1.3-.9M12 2.2v1.6M3.2 12h1.6M19.2 12h1.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".55"/></svg><span class="vh">Tune ' + LAYERS[k].label + '</span></button>';
         d.querySelector('.pad-main').addEventListener('click', () => toggleLayer(k));
         d.querySelector('.pad-tune').addEventListener('click', () => ui.tune(state.tuning === k ? null : k));
@@ -1285,7 +1290,7 @@ const ui = {
     for (const p in PARAMS) {
       if (PARAMS[p].notes && LAYERS[k].continuous) continue;
       const w = document.createElement('div'); w.className = 'slider';
-      w.innerHTML = '<label for="sl-' + p + '">' + PARAMS[p].label + ' <span data-val="' + p + '"></span></label><input id="sl-' + p + '" type="range" min="0" max="100" step="1"><small>' + PARAMS[p].hint + '</small>';
+      w.innerHTML = '<label for="sl-' + p + '">' + PARAMS[p].label + ' <span data-val="' + p + '"></span></label><input id="sl-' + p + '" type="range" min="0" max="100" step="1">';
       const inp = w.querySelector('input'); inp.value = state.voice[k][p];
       inp.addEventListener('input', () => setParam(k, p, inp.value));
       inp.addEventListener('dblclick', () => { inp.value = PARAMS[p].def; setParam(k, p, PARAMS[p].def); });
@@ -1296,7 +1301,6 @@ const ui = {
   voicePanelValues() { const k = state.tuning; if (!k) return; $('vpSliders').querySelectorAll('[data-val]').forEach(s => { s.textContent = state.voice[k][s.dataset.val]; }); },
   playing(onoff) {
     for (const id of ['btnPlay', 'dockPlay']) { const b = $(id); b.classList.toggle('on', onoff); b.classList.remove('pulse'); b.setAttribute('aria-pressed', String(onoff)); b.setAttribute('aria-label', onoff ? 'Pause' : 'Play'); }
-    $('nowKicker').textContent = onoff ? 'Now playing' : 'Ready to play';
     $('discCaption').textContent = onoff ? 'playing · ' + state.canyon.id : '33⅓ · side A';
     ui.hint();
   },
@@ -1307,15 +1311,13 @@ const ui = {
     if (cut.by) pb.innerHTML = '<span class="tag">Passed to you</span><span><b>' + esc(cut.by) + '</b> sent you this song' + (cut.gen ? ', pressing ' + ordinal(cut.gen) : '') + '. Press play, then make it your own and pass it on.</span>';
     if ($('cutName').value !== cut.name) $('cutName').value = cut.name;
     $('passHint').innerHTML = cut.by
-      ? '<b>' + esc(cut.by) + '</b>’s song. Rename it if you like, add your name, and share it on.'
-      : 'Your link and a card, with your name on it.';
+      ? '<b>' + esc(cut.by) + '</b>’s song. Rename it, add your name, and send it on.'
+      : 'Send a link to your song.';
   },
   hint() {
     const c = state.canyon;
     ui.cutInfo();
-    $('playHint').innerHTML = audio.playing
-      ? 'The needle is in the groove. Try another canyon below, or open a voice’s <b>tune</b> tab. Space bar pauses.'
-      : 'Press play to drop the needle on <b>' + esc(c.name) + '</b>. Then change the canyon or tune the voices.';
+    $('playHint').innerHTML = audio.playing ? '' : 'Press play.';
     $('dockName').textContent = c.name;
     $('dockSub').textContent = (audio.playing ? 'Playing · ' : 'Paused · ') + NOTE_NAMES[effectiveRoot()] + ' ' + MOODS[effectiveMood()].label.toLowerCase();
   },
