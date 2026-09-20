@@ -229,6 +229,8 @@
   .info-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .6rem 2rem; align-items: start; }
   .info-body p { color: var(--cream-dim); margin-bottom: .7rem; max-width: 66ch; }
   .info-body p strong { color: var(--cream); font-weight: 400; }
+  .info-body h4 { font-family: var(--display); font-weight: 400; font-size: 1.15rem; letter-spacing: .07em; color: var(--amber); line-height: 1; margin: 1.1rem 0 .4rem; }
+  .info-body h4:first-child { margin-top: .2rem; }
   .info-body .line-facts { font-size: .72rem; color: var(--faint); letter-spacing: .04em; }
   .info-actions { display: flex; flex-direction: column; gap: .5rem; align-items: stretch; min-width: 200px; }
   .info-actions .btn { justify-content: center; font-size: 1rem; }
@@ -258,7 +260,7 @@
   @media (prefers-reduced-motion: reduce) { .play.pulse::after { animation: none; } }
   @media (prefers-reduced-motion: reduce) { .btn-rec.on .dot { animation: none; } }
   body.embed { min-height: 0; }
-  body.embed .crumb, body.embed #labFooter, body.embed .dock { display: none; }
+  body.embed .crumb, body.embed #labFooter, body.embed .dock, body.embed .subscribe-cta { display: none; }
   body.embed.docked .page { padding-bottom: 3rem; }
 </style>
 </head>
@@ -520,9 +522,8 @@ let IMAGES = [];
 const LAME_URL = 'https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.all.js';
 
 const METHOD_TEXT = [
-  ['The line', 'A straight line between two coordinates, rim to rim, sampled at 100 points. Every pair of coordinates is in canyons.json, so you can check any line on a map.'],
-  ['The data', 'Elevations come from the Copernicus DEM GLO-90, a satellite model on a 90-metre grid, through the Open-Meteo API. Yarlung Tsangpo came from Open-Elevation.'],
-  ['The catch', 'A 90-metre cell averages whatever is inside it. Sharp rims read low and narrow slots disappear. The relief numbers here are a floor, not a ceiling.'],
+  ['The measurement', 'Each canyon is a straight line between two coordinates, rim to rim, measured at 100 points. Elevations come from the Copernicus DEM GLO-90, a satellite model on a 90-metre grid, through the Open-Meteo API. Yarlung Tsangpo came from Open-Elevation. Every coordinate is in canyons.json, so you can check a line on a map.'],
+  ['How far to trust it', 'A 90-metre cell averages whatever is inside it. Sharp rims read low and narrow slots disappear, so the relief figures here are a floor rather than a ceiling.'],
 ]
 
 /* ----------------------------------------------------------------- utils */
@@ -1208,7 +1209,7 @@ function closeInfo() {
   infoTrigger = null;
 }
 function infoShell(title, sub, body, actions, foot) {
-  return '<div class="info-head"><div><h3>' + title + '</h3><div class="sub">' + sub + '</div></div><button class="chip-btn" type="button" data-close aria-label="Close">Close</button></div>'
+  return '<div class="info-head"><div><h3>' + title + '</h3>' + (sub ? '<div class="sub">' + sub + '</div>' : '') + '</div><button class="chip-btn" type="button" data-close aria-label="Close">Close</button></div>'
     + '<div class="info-body"><div>' + body + '</div><div class="info-actions">' + actions + '</div><div class="info-foot">' + foot + '</div></div>';
 }
 function canyonDialog(c, trigger) {
@@ -1219,8 +1220,8 @@ function canyonDialog(c, trigger) {
     'Source: ' + esc(c.source.label) + ' &middot; Terrain: ' + (c.src === 'open-elevation' ? 'SRTM via Open-Elevation' : 'Copernicus DEM GLO-90 via Open-Meteo') + ' &middot; ' + c.a[0].toFixed(4) + ', ' + c.a[1].toFixed(4) + ' &rarr; ' + c.b[0].toFixed(4) + ', ' + c.b[1].toFixed(4)), trigger);
 }
 function methodDialog(trigger) {
-  openInfo(infoShell('How this was measured', 'and how far to trust it',
-    METHOD_TEXT.map(([h, p]) => '<p><strong>' + h + '.</strong> ' + p + '</p>').join(''),
+  openInfo(infoShell('How this was measured', '',
+    METHOD_TEXT.map(([h, p]) => '<h4>' + h + '</h4><p>' + p + '</p>').join(''),
     '<a class="more" href="canyons.json" target="_blank" rel="noopener">The dataset &nearr;</a><a class="more" href="' + outbound('https://open-meteo.com/en/docs/elevation-api') + '" target="_blank" rel="noopener">Learn more &nearr;</a>',
     'Source: Open-Meteo Elevation API, Copernicus DEM GLO-90 (ESA). Compiled for Canyon Groove, cumberlandcoast.com, September 2026.'), trigger);
 }
